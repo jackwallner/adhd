@@ -101,7 +101,7 @@ def ensure_localization(client: asc_lib.ASCClient, product_id: str) -> None:
         attrs = existing["attributes"]
         if attrs.get("name") == name and attrs.get("description") == description:
             return
-        use_v2(
+        use_v1(
             client,
             lambda: client.patch(
                 f"/inAppPurchaseLocalizations/{existing['id']}",
@@ -115,7 +115,7 @@ def ensure_localization(client: asc_lib.ASCClient, product_id: str) -> None:
             ),
         )
         return
-    use_v2(
+    use_v1(
         client,
         lambda: client.post(
             "/inAppPurchaseLocalizations",
@@ -144,7 +144,7 @@ def ensure_availability(client: asc_lib.ASCClient, product_id: str, territories:
         availability = None
     if availability:
         return
-    use_v2(
+    use_v1(
         client,
         lambda: client.post(
             "/inAppPurchaseAvailabilities",
@@ -172,7 +172,8 @@ def ensure_price_schedule(client: asc_lib.ASCClient, product_id: str) -> None:
         )
     except RuntimeError:
         schedule = None
-    if schedule:
+    manual_prices = (schedule or {}).get("relationships", {}).get("manualPrices", {}).get("data", [])
+    if manual_prices:
         print("lifetime price schedule already exists; leaving it unchanged")
         return
 
