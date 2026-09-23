@@ -27,6 +27,7 @@ struct NextCuePaywallView: View {
 
     var body: some View {
         NavigationStack {
+            ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 9) {
@@ -50,16 +51,19 @@ struct NextCuePaywallView: View {
                             NextCuePlanCard(package: yearly, title: "Yearly", note: trialNote(for: yearly), badge: savingsBadge, selected: selection == .yearly) {
                                 selection = .yearly
                             }
+                            .id(NextCuePlan.yearly)
                         }
                         if let monthly = purchases.monthly {
                             NextCuePlanCard(package: monthly, title: "Monthly", note: trialNote(for: monthly), badge: nil, selected: selection == .monthly) {
                                 selection = .monthly
                             }
+                            .id(NextCuePlan.monthly)
                         }
                         if let lifetime = purchases.lifetime {
-                            NextCuePlanCard(package: lifetime, title: "Lifetime", note: "One-time purchase · no renewal", badge: nil, selected: selection == .lifetime) {
+                            NextCuePlanCard(package: lifetime, title: "Lifetime", note: "Pay once, no renewal", badge: nil, selected: selection == .lifetime) {
                                 selection = .lifetime
                             }
+                            .id(NextCuePlan.lifetime)
                         }
                         if purchases.packages.isEmpty {
                             ProgressView("Loading plans")
@@ -72,6 +76,13 @@ struct NextCuePaywallView: View {
                 .padding(.horizontal, 22)
                 .padding(.top, 12)
                 .padding(.bottom, 18)
+            }
+            .task(id: purchases.packages.count) {
+                if selection == .lifetime { proxy.scrollTo(NextCuePlan.lifetime, anchor: .bottom) }
+            }
+            .onChange(of: selection) { _, plan in
+                withAnimation { proxy.scrollTo(plan, anchor: .bottom) }
+            }
             }
             .background(NextCueStyle.background.ignoresSafeArea())
             .navigationTitle("Next Cue Pro")
@@ -152,7 +163,7 @@ struct NextCuePaywallView: View {
 
     private func trialNote(for package: Package) -> String? {
         guard purchases.isEligibleForTrial(package), let trial = package.trialLabel else { return nil }
-        return "\(trial) included"
+        return trial
     }
 
     private var savingsBadge: String? {
@@ -169,8 +180,7 @@ struct NextCuePaywallView: View {
             return "\(package.storeProduct.localizedPriceString) one time. No subscription or automatic renewal."
         }
         if let selectedTrial {
-            let duration = selectedTrial.replacingOccurrences(of: " free trial", with: "")
-            return "\(duration) free, then \(package.billedLabel). Automatically renews at that price unless cancelled at least 24 hours before the current period ends. Manage or cancel in your Apple Account subscription settings."
+            return "\(selectedTrial), then \(package.billedLabel). Automatically renews at that price unless cancelled at least 24 hours before the current period ends. Manage or cancel in your Apple Account subscription settings."
         }
         return "\(package.billedLabel), billed now and automatically renewed unless cancelled at least 24 hours before the current period ends. Manage or cancel in your Apple Account subscription settings."
     }
@@ -221,6 +231,8 @@ private struct NextCuePlanCard: View {
                         Text(note)
                             .font(.caption)
                             .foregroundStyle(NextCueStyle.secondary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.85)
                     }
                 }
                 Spacer(minLength: 4)

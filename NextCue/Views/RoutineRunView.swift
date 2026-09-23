@@ -43,14 +43,18 @@ struct RoutineRunView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(NextCueStyle.background.ignoresSafeArea())
             .toolbar {
+                if !didFinish, let run = routines.activeRun {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         pauseAndClose()
                     } label: {
-                        Label("Pause", systemImage: "pause.fill")
+                        if run.pausedAt != nil {
+                            Label("Close", systemImage: "xmark")
+                        } else {
+                            Label("Pause", systemImage: "pause.fill")
+                        }
                     }
-                    .disabled(routines.activeRun == nil || didFinish)
-                    .accessibilityHint("Pauses this run and returns to Today")
+                    .accessibilityHint(run.pausedAt != nil ? "Returns to Today with this run saved" : "Pauses this run and returns to Today")
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -60,7 +64,7 @@ struct RoutineRunView: View {
                             .font(.headline.weight(.semibold))
                     }
                     .accessibilityLabel("More routine options")
-                    .disabled(routines.activeRun == nil || didFinish)
+                }
                 }
             }
             .confirmationDialog("Finish this routine now?", isPresented: $showFinishConfirmation, titleVisibility: .visible) {
@@ -178,10 +182,16 @@ struct RoutineRunView: View {
                 .tint(NextCueStyle.accent)
                 .accessibilityLabel("Routine progress")
                 .accessibilityValue("Step \(run.currentStepIndex + 1) of \(run.steps.count)")
-            Text("\(run.steps.count - run.currentStepIndex) \(run.steps.count - run.currentStepIndex == 1 ? "step" : "steps") to go")
+            Text(stepsAfterLabel(for: run))
                 .font(.caption.weight(.medium))
                 .foregroundStyle(NextCueStyle.secondary)
         }
+    }
+
+    private func stepsAfterLabel(for run: RoutineRun) -> String {
+        let remaining = run.steps.count - run.currentStepIndex - 1
+        if remaining <= 0 { return "Last step" }
+        return "\(remaining) more \(remaining == 1 ? "step" : "steps") after this"
     }
 
     private var finishedView: some View {
@@ -283,8 +293,8 @@ struct RoutineRunView: View {
     }
 
     private func pauseAndClose() {
-        guard routines.activeRun != nil else { return }
-        guard routines.pauseRun() else {
+        guard let run = routines.activeRun else { return }
+        guard run.isPaused || routines.pauseRun() else {
             showRoutineError = true
             return
         }
