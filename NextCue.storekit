@@ -1,0 +1,101 @@
+{
+  "identifier" : "NextCueStoreKitConfig",
+  "nonRenewingSubscriptions" : [],
+  "products" : [
+    {
+      "displayPrice" : "29.99",
+      "familyShareable" : false,
+      "internalID" : "8300003",
+      "localizations" : [
+        {
+          "description" : "Unlock Next Cue Pro for life",
+          "displayName" : "Next Cue Pro Lifetime",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.jackwallner.adhd.lifetime",
+      "referenceName" : "Next Cue Pro Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "0",
+    "_developerTeamID" : "YXG4MP6W39",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 0,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "8300001",
+      "localizations" : [
+        {
+          "description" : "Next Cue Pro subscription",
+          "displayName" : "Next Cue Pro",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Next Cue Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "8300004",
+          "introductoryOffer" : {
+            "internalID" : "8300014",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Next Cue Pro monthly access",
+              "displayName" : "Next Cue Pro Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.jackwallner.adhd.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Next Cue Pro Monthly",
+          "subscriptionGroupID" : "8300001",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "14.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "8300005",
+          "introductoryOffer" : {
+            "internalID" : "8300015",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Next Cue Pro yearly access",
+              "displayName" : "Next Cue Pro Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.jackwallner.adhd.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Next Cue Pro Yearly",
+          "subscriptionGroupID" : "8300001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

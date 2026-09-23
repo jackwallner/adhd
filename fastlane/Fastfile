@@ -1,0 +1,75 @@
+APP_IDENTIFIER = "com.jackwallner.adhd"
+APP_STORE_CONNECT_APP_ID = "6815023447"
+
+def asc_api_key
+  app_store_connect_api_key(
+    key_id: ENV["ASC_API_KEY_ID"],
+    issuer_id: ENV["ASC_ISSUER_ID"],
+    key_filepath: ENV["ASC_KEY_PATH"]
+  )
+end
+
+def verify_app_record(api_key)
+  Spaceship::ConnectAPI.token = api_key
+  app = Spaceship::ConnectAPI::App.find(APP_IDENTIFIER)
+  UI.user_error!("App Store Connect record not found for #{APP_IDENTIFIER}") unless app
+  UI.user_error!("Unexpected App Store Connect app ID #{app.id}") unless app.id.to_s == APP_STORE_CONNECT_APP_ID
+end
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Upload the listing metadata without screenshots or review submission"
+  lane :upload_metadata do
+    api_key = asc_api_key
+    verify_app_record(api_key)
+    version = ENV["ASC_APP_VERSION"]
+    UI.user_error!("Set ASC_APP_VERSION, or run scripts/asc-ensure-draft-version.py") unless version && !version.empty?
+
+    deliver(
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      app_version: version,
+      skip_app_version_update: true,
+      force: true,
+      ignore_language_directory_validation: true,
+      precheck_include_in_app_purchases: false,
+      version_check_wait_retry_limit: 7,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      overwrite_screenshots: false,
+      submit_for_review: false,
+      automatic_release: false,
+      run_precheck_before_submit: false,
+      submission_information: {
+        add_id_info_uses_idfa: false
+      }
+    )
+  end
+
+  desc "Upload App Store screenshots without listing metadata or review submission"
+  lane :upload_screenshots do
+    api_key = asc_api_key
+    verify_app_record(api_key)
+    version = ENV["ASC_APP_VERSION"]
+    UI.user_error!("Set ASC_APP_VERSION, or run scripts/asc-ensure-draft-version.py") unless version && !version.empty?
+
+    deliver(
+      api_key: api_key,
+      app_identifier: APP_IDENTIFIER,
+      app_version: version,
+      skip_app_version_update: true,
+      force: true,
+      ignore_language_directory_validation: true,
+      precheck_include_in_app_purchases: false,
+      version_check_wait_retry_limit: 7,
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: false,
+      overwrite_screenshots: true,
+      submit_for_review: false,
+      automatic_release: false,
+      run_precheck_before_submit: false
+    )
+  end
+end

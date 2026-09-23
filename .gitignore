@@ -1,0 +1,26 @@
+# XcodeGen output and build products
+*.xcodeproj
+*.xcworkspace
+DerivedData/
+build/
+.build/
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Local secrets and machine-specific files
+.env*
+!.env.example
+*.p8
+.baseball_credentials
+.DS_Store
+
+# Fastlane output and ASC snapshots
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/test_output/
+fastlane/metadata.bak.*
+scripts/.asc-state.json
+__pycache__/
+*.pyc

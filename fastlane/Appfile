@@ -1,0 +1,9 @@
+# App Store Connect app ID: 6815023447
+app_identifier("com.jackwallner.adhd")
+apple_id(ENV.fetch("FASTLANE_USER", "jackwallner@gmail.com"))
+team_id("YXG4MP6W39")
+itc_team_id("YXG4MP6W39")
+
+opt_out_usage
+
+default_platform(:ios)
