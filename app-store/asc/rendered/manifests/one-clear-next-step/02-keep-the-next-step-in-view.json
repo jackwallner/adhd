@@ -1,0 +1,70 @@
+{
+  "filename": "02-keep-the-next-step-in-view.png",
+  "path": "one-clear-next-step/02-keep-the-next-step-in-view.png",
+  "output_sha256": "6f90da04af1bcfc4c24aa7a7c59d639701db1cf00ab52a5219618f367ff8cd27",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Keep the next step in view",
+  "pitch": {
+    "benefit": "Follow the current step without scanning the full routine",
+    "problem": "A checklist can still leave a person deciding which task to do now.",
+    "advantage": "The run screen puts one current step, progress, and step controls together.",
+    "header_problem": "choosing from a checklist",
+    "header_advantage": "one current step",
+    "search_terms": [
+      "step by step routine",
+      "morning routine planner"
+    ],
+    "proof": "The real run screen shows Get out of bed as the current step, with progress and Done with this step."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/captures/02-run.png",
+  "source_sha256": "058ba70681cdf950d30d326d55ee9c1b6b3deecf9ea0305baf2a70c176eeee58",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/one-clear-next-step/02-keep-the-next-step-in-view.foreground.png",
+  "foreground_sha256": "40697f9f7bbb6d5d7e1ddd461221ce2c2e86c42010b3ec8d362f067d8cfbe8a9",
+  "ui_mask": "manifests/one-clear-next-step/02-keep-the-next-step-in-view.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "Keep the next step in view",
+  "header_bounds": [
+    185,
+    158,
+    1134,
+    471
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/02-run.png",
+  "source_evidence_sha256": "058ba70681cdf950d30d326d55ee9c1b6b3deecf9ea0305baf2a70c176eeee58"
+}

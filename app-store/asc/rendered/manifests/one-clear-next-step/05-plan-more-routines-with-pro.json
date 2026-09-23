@@ -1,0 +1,70 @@
+{
+  "filename": "05-plan-more-routines-with-pro.png",
+  "path": "one-clear-next-step/05-plan-more-routines-with-pro.png",
+  "output_sha256": "26ab9aa68dd26ee4ffc597b89245fba63f921f87b51e3fed57d4890af787178b",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Plan more routines with Pro",
+  "pitch": {
+    "benefit": "Keep separate morning and evening routines in one library",
+    "problem": "One routine may not fit every part of a day.",
+    "advantage": "Next Cue Pro adds more routines while the first routine stays free.",
+    "header_problem": "one routine for every part of the day",
+    "header_advantage": "separate routines with Pro",
+    "search_terms": [
+      "morning and evening routine",
+      "multiple routines"
+    ],
+    "proof": "The library shows the seeded morning and evening routines. Pro is explicit in the header; the first routine remains free."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/captures/05-routines.png",
+  "source_sha256": "621b595dc312d692a87bca7c01f33701120046a247208b66681aaeb266da6845",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/one-clear-next-step/05-plan-more-routines-with-pro.foreground.png",
+  "foreground_sha256": "a068d2fe1950c1d5a9fb8558e5a4f0dc485ad587ae764d6900a7d579973a8eff",
+  "ui_mask": "manifests/one-clear-next-step/05-plan-more-routines-with-pro.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 152,
+  "header_lines": 2,
+  "header_text": "Plan more routines with Pro",
+  "header_bounds": [
+    132,
+    154,
+    1187,
+    420
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/05-routines.png",
+  "source_evidence_sha256": "621b595dc312d692a87bca7c01f33701120046a247208b66681aaeb266da6845"
+}

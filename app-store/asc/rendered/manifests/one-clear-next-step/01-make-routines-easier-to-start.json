@@ -1,0 +1,70 @@
+{
+  "filename": "01-make-routines-easier-to-start.png",
+  "path": "one-clear-next-step/01-make-routines-easier-to-start.png",
+  "output_sha256": "5d4c4c18c2afbabb744904b56a0b78a2b263dd7256081c041732fa9ce482d9fb",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Make routines easier to start",
+  "pitch": {
+    "benefit": "See one scheduled routine and a direct way to begin",
+    "problem": "A broad list of tasks can leave the first action unclear.",
+    "advantage": "Today leads with the next scheduled routine and a clear start action.",
+    "header_problem": "too many possible tasks",
+    "header_advantage": "one next routine",
+    "search_terms": [
+      "ADHD routine app",
+      "daily routine planner"
+    ],
+    "proof": "The literal Today screen shows the next routine, its schedule, and Start routine. This frame uses a seeded Pro state because the sample includes morning and evening routines."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/captures/01-home.png",
+  "source_sha256": "439e3edf871950f6a26514169542defc459ce0b7a0f8a36628a87b3a0ae45f2f",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/one-clear-next-step/01-make-routines-easier-to-start.foreground.png",
+  "foreground_sha256": "1f87b211f64030644a5af098b230f7855b9b75880988dee4c9e5c858620d7da6",
+  "ui_mask": "manifests/one-clear-next-step/01-make-routines-easier-to-start.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "Make routines easier to start",
+  "header_bounds": [
+    175,
+    158,
+    1145,
+    443
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/01-home.png",
+  "source_evidence_sha256": "439e3edf871950f6a26514169542defc459ce0b7a0f8a36628a87b3a0ae45f2f"
+}

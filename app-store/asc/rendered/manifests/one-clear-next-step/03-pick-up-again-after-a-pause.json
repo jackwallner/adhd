@@ -1,0 +1,70 @@
+{
+  "filename": "03-pick-up-again-after-a-pause.png",
+  "path": "one-clear-next-step/03-pick-up-again-after-a-pause.png",
+  "output_sha256": "84383553050ae7fbc8ea2b6e42a305dbada26a1dd89bbe80f2461668e959ffab",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Pick up again after a pause",
+  "pitch": {
+    "benefit": "Return to an unfinished routine at its saved step",
+    "problem": "An interruption can break a run and make the next action hard to find again.",
+    "advantage": "Next Cue saves the current run so the person can pause and resume later.",
+    "header_problem": "a broken routine",
+    "header_advantage": "a saved next step",
+    "search_terms": [
+      "resume routine",
+      "routine reminders"
+    ],
+    "proof": "The paused screen shows the preserved current step and Resume. A store test also verifies that progress survives relaunch."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/captures/03-paused.png",
+  "source_sha256": "c40b50d3cecb27ff4f6aeee8e4f5048893804dcd991ca9a6f9d6346875f57463",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/one-clear-next-step/03-pick-up-again-after-a-pause.foreground.png",
+  "foreground_sha256": "fb1ed16b1e8277273aada460f6b907b21d543a8f271e16b9a4c4543d64030354",
+  "ui_mask": "manifests/one-clear-next-step/03-pick-up-again-after-a-pause.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "Pick up again after a pause",
+  "header_bounds": [
+    205,
+    158,
+    1115,
+    471
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/03-paused.png",
+  "source_evidence_sha256": "c40b50d3cecb27ff4f6aeee8e4f5048893804dcd991ca9a6f9d6346875f57463"
+}

@@ -1,0 +1,70 @@
+{
+  "filename": "06-build-routines-your-way-with-pro.png",
+  "path": "one-clear-next-step/06-build-routines-your-way-with-pro.png",
+  "output_sha256": "3ba3ab321b4c7f768d0de42817a210ae6d377913d7c0fb5690a90068aef464d7",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Build routines your way with Pro",
+  "pitch": {
+    "benefit": "Start from a template, change each step, and choose the days it fits",
+    "problem": "A fixed routine can be hard to use when the steps or schedule do not fit.",
+    "advantage": "Next Cue makes steps and weekly reminders editable for each routine.",
+    "header_problem": "a one-size routine",
+    "header_advantage": "editable routine templates",
+    "search_terms": [
+      "custom routine planner",
+      "scheduled routines"
+    ],
+    "proof": "The editor shows routine templates, editable steps, reminder time, and selected weekdays. The Pro requirement for adding another routine is named in the header."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/captures/06-editor.png",
+  "source_sha256": "570ac2abda645b5d73bfe7c52e599ed201dadf288a20f3d328cc6a40a5bcf317",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/one-clear-next-step/06-build-routines-your-way-with-pro.foreground.png",
+  "foreground_sha256": "ec3d2d5203e8485e6eaaa1215eda9fa7d1e6ba0fa8a055e2cccba525ff533c8d",
+  "ui_mask": "manifests/one-clear-next-step/06-build-routines-your-way-with-pro.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 144,
+  "header_lines": 2,
+  "header_text": "Build routines your way with Pro",
+  "header_bounds": [
+    130,
+    152,
+    1189,
+    430
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/06-editor.png",
+  "source_evidence_sha256": "570ac2abda645b5d73bfe7c52e599ed201dadf288a20f3d328cc6a40a5bcf317"
+}

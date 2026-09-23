@@ -1,0 +1,441 @@
+{
+  "app": "nextcue",
+  "manifest": "/Users/jackwallner/adhd/app-store/asc/nextcue.json",
+  "target": "iphone_69",
+  "copy_contract": "single-header-benefit-story-v3",
+  "background_override": null,
+  "sets": [
+    {
+      "id": "one-clear-next-step",
+      "style": "quiet-next-step",
+      "frames": [
+        {
+          "filename": "01-make-routines-easier-to-start.png",
+          "path": "one-clear-next-step/01-make-routines-easier-to-start.png",
+          "output_sha256": "5d4c4c18c2afbabb744904b56a0b78a2b263dd7256081c041732fa9ce482d9fb",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Make routines easier to start",
+          "pitch": {
+            "benefit": "See one scheduled routine and a direct way to begin",
+            "problem": "A broad list of tasks can leave the first action unclear.",
+            "advantage": "Today leads with the next scheduled routine and a clear start action.",
+            "header_problem": "too many possible tasks",
+            "header_advantage": "one next routine",
+            "search_terms": [
+              "ADHD routine app",
+              "daily routine planner"
+            ],
+            "proof": "The literal Today screen shows the next routine, its schedule, and Start routine. This frame uses a seeded Pro state because the sample includes morning and evening routines."
+          },
+          "source": "/Users/jackwallner/adhd/app-store/asc/captures/01-home.png",
+          "source_sha256": "439e3edf871950f6a26514169542defc459ce0b7a0f8a36628a87b3a0ae45f2f",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/one-clear-next-step/01-make-routines-easier-to-start.foreground.png",
+          "foreground_sha256": "1f87b211f64030644a5af098b230f7855b9b75880988dee4c9e5c858620d7da6",
+          "ui_mask": "manifests/one-clear-next-step/01-make-routines-easier-to-start.ui-mask.png",
+          "ui_coverage": 0.6066,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#F4F1E8",
+          "background_bottom": "#E5EBE6",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 126,
+            "y": 560,
+            "width": 1067,
+            "height": 2273,
+            "screen_x": 146,
+            "screen_y": 580,
+            "screen_width": 1027,
+            "screen_height": 2233,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 164,
+          "header_lines": 2,
+          "header_text": "Make routines easier to start",
+          "header_bounds": [
+            175,
+            158,
+            1145,
+            443
+          ],
+          "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/01-home.png",
+          "source_evidence_sha256": "439e3edf871950f6a26514169542defc459ce0b7a0f8a36628a87b3a0ae45f2f",
+          "manifest": "manifests/one-clear-next-step/01-make-routines-easier-to-start.json"
+        },
+        {
+          "filename": "02-keep-the-next-step-in-view.png",
+          "path": "one-clear-next-step/02-keep-the-next-step-in-view.png",
+          "output_sha256": "6f90da04af1bcfc4c24aa7a7c59d639701db1cf00ab52a5219618f367ff8cd27",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Keep the next step in view",
+          "pitch": {
+            "benefit": "Follow the current step without scanning the full routine",
+            "problem": "A checklist can still leave a person deciding which task to do now.",
+            "advantage": "The run screen puts one current step, progress, and step controls together.",
+            "header_problem": "choosing from a checklist",
+            "header_advantage": "one current step",
+            "search_terms": [
+              "step by step routine",
+              "morning routine planner"
+            ],
+            "proof": "The real run screen shows Get out of bed as the current step, with progress and Done with this step."
+          },
+          "source": "/Users/jackwallner/adhd/app-store/asc/captures/02-run.png",
+          "source_sha256": "058ba70681cdf950d30d326d55ee9c1b6b3deecf9ea0305baf2a70c176eeee58",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/one-clear-next-step/02-keep-the-next-step-in-view.foreground.png",
+          "foreground_sha256": "40697f9f7bbb6d5d7e1ddd461221ce2c2e86c42010b3ec8d362f067d8cfbe8a9",
+          "ui_mask": "manifests/one-clear-next-step/02-keep-the-next-step-in-view.ui-mask.png",
+          "ui_coverage": 0.6066,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#F4F1E8",
+          "background_bottom": "#E5EBE6",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 126,
+            "y": 560,
+            "width": 1067,
+            "height": 2273,
+            "screen_x": 146,
+            "screen_y": 580,
+            "screen_width": 1027,
+            "screen_height": 2233,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 164,
+          "header_lines": 2,
+          "header_text": "Keep the next step in view",
+          "header_bounds": [
+            185,
+            158,
+            1134,
+            471
+          ],
+          "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/02-run.png",
+          "source_evidence_sha256": "058ba70681cdf950d30d326d55ee9c1b6b3deecf9ea0305baf2a70c176eeee58",
+          "manifest": "manifests/one-clear-next-step/02-keep-the-next-step-in-view.json"
+        },
+        {
+          "filename": "03-pick-up-again-after-a-pause.png",
+          "path": "one-clear-next-step/03-pick-up-again-after-a-pause.png",
+          "output_sha256": "84383553050ae7fbc8ea2b6e42a305dbada26a1dd89bbe80f2461668e959ffab",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Pick up again after a pause",
+          "pitch": {
+            "benefit": "Return to an unfinished routine at its saved step",
+            "problem": "An interruption can break a run and make the next action hard to find again.",
+            "advantage": "Next Cue saves the current run so the person can pause and resume later.",
+            "header_problem": "a broken routine",
+            "header_advantage": "a saved next step",
+            "search_terms": [
+              "resume routine",
+              "routine reminders"
+            ],
+            "proof": "The paused screen shows the preserved current step and Resume. A store test also verifies that progress survives relaunch."
+          },
+          "source": "/Users/jackwallner/adhd/app-store/asc/captures/03-paused.png",
+          "source_sha256": "c40b50d3cecb27ff4f6aeee8e4f5048893804dcd991ca9a6f9d6346875f57463",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/one-clear-next-step/03-pick-up-again-after-a-pause.foreground.png",
+          "foreground_sha256": "fb1ed16b1e8277273aada460f6b907b21d543a8f271e16b9a4c4543d64030354",
+          "ui_mask": "manifests/one-clear-next-step/03-pick-up-again-after-a-pause.ui-mask.png",
+          "ui_coverage": 0.6066,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#F4F1E8",
+          "background_bottom": "#E5EBE6",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 126,
+            "y": 560,
+            "width": 1067,
+            "height": 2273,
+            "screen_x": 146,
+            "screen_y": 580,
+            "screen_width": 1027,
+            "screen_height": 2233,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 164,
+          "header_lines": 2,
+          "header_text": "Pick up again after a pause",
+          "header_bounds": [
+            205,
+            158,
+            1115,
+            471
+          ],
+          "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/03-paused.png",
+          "source_evidence_sha256": "c40b50d3cecb27ff4f6aeee8e4f5048893804dcd991ca9a6f9d6346875f57463",
+          "manifest": "manifests/one-clear-next-step/03-pick-up-again-after-a-pause.json"
+        },
+        {
+          "filename": "04-finish-at-your-own-pace.png",
+          "path": "one-clear-next-step/04-finish-at-your-own-pace.png",
+          "output_sha256": "f2b3e1834f71d9fd38fec9018c766e2a1aafe144dcc9361942757216db6f5ac1",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Finish a routine at your own pace",
+          "pitch": {
+            "benefit": "Finish a routine without a countdown or a streak requirement",
+            "problem": "Timed routines and streak pressure can make a flexible routine feel like a test.",
+            "advantage": "Next Cue tracks completed steps and leaves the user free to return when it fits.",
+            "header_problem": "timer and streak pressure",
+            "header_advantage": "progress at your pace",
+            "search_terms": [
+              "flexible daily routine",
+              "routine planner"
+            ],
+            "proof": "The completion screen celebrates finishing and invites the user back whenever the routine fits."
+          },
+          "source": "/Users/jackwallner/adhd/app-store/asc/captures/04-complete.png",
+          "source_sha256": "2a05d9707993ffad38cf8ba0d9dbe9adadca4f3308d68c58d029519568c5b6ed",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/one-clear-next-step/04-finish-at-your-own-pace.foreground.png",
+          "foreground_sha256": "1caa8b2c04e8ca5e1f01c9ac336d8eee43fcf57699859b750c51df79ad183297",
+          "ui_mask": "manifests/one-clear-next-step/04-finish-at-your-own-pace.ui-mask.png",
+          "ui_coverage": 0.6066,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#F4F1E8",
+          "background_bottom": "#E5EBE6",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 126,
+            "y": 560,
+            "width": 1067,
+            "height": 2273,
+            "screen_x": 146,
+            "screen_y": 580,
+            "screen_width": 1027,
+            "screen_height": 2233,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 152,
+          "header_lines": 2,
+          "header_text": "Finish a routine at your own pace",
+          "header_bounds": [
+            120,
+            154,
+            1199,
+            447
+          ],
+          "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/04-complete.png",
+          "source_evidence_sha256": "2a05d9707993ffad38cf8ba0d9dbe9adadca4f3308d68c58d029519568c5b6ed",
+          "manifest": "manifests/one-clear-next-step/04-finish-at-your-own-pace.json"
+        },
+        {
+          "filename": "05-plan-more-routines-with-pro.png",
+          "path": "one-clear-next-step/05-plan-more-routines-with-pro.png",
+          "output_sha256": "26ab9aa68dd26ee4ffc597b89245fba63f921f87b51e3fed57d4890af787178b",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Plan more routines with Pro",
+          "pitch": {
+            "benefit": "Keep separate morning and evening routines in one library",
+            "problem": "One routine may not fit every part of a day.",
+            "advantage": "Next Cue Pro adds more routines while the first routine stays free.",
+            "header_problem": "one routine for every part of the day",
+            "header_advantage": "separate routines with Pro",
+            "search_terms": [
+              "morning and evening routine",
+              "multiple routines"
+            ],
+            "proof": "The library shows the seeded morning and evening routines. Pro is explicit in the header; the first routine remains free."
+          },
+          "source": "/Users/jackwallner/adhd/app-store/asc/captures/05-routines.png",
+          "source_sha256": "621b595dc312d692a87bca7c01f33701120046a247208b66681aaeb266da6845",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/one-clear-next-step/05-plan-more-routines-with-pro.foreground.png",
+          "foreground_sha256": "a068d2fe1950c1d5a9fb8558e5a4f0dc485ad587ae764d6900a7d579973a8eff",
+          "ui_mask": "manifests/one-clear-next-step/05-plan-more-routines-with-pro.ui-mask.png",
+          "ui_coverage": 0.6066,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#F4F1E8",
+          "background_bottom": "#E5EBE6",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 126,
+            "y": 560,
+            "width": 1067,
+            "height": 2273,
+            "screen_x": 146,
+            "screen_y": 580,
+            "screen_width": 1027,
+            "screen_height": 2233,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 152,
+          "header_lines": 2,
+          "header_text": "Plan more routines with Pro",
+          "header_bounds": [
+            132,
+            154,
+            1187,
+            420
+          ],
+          "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/05-routines.png",
+          "source_evidence_sha256": "621b595dc312d692a87bca7c01f33701120046a247208b66681aaeb266da6845",
+          "manifest": "manifests/one-clear-next-step/05-plan-more-routines-with-pro.json"
+        },
+        {
+          "filename": "06-build-routines-your-way-with-pro.png",
+          "path": "one-clear-next-step/06-build-routines-your-way-with-pro.png",
+          "output_sha256": "3ba3ab321b4c7f768d0de42817a210ae6d377913d7c0fb5690a90068aef464d7",
+          "output_size": [
+            1320,
+            2868
+          ],
+          "device": "iphone",
+          "header": "Build routines your way with Pro",
+          "pitch": {
+            "benefit": "Start from a template, change each step, and choose the days it fits",
+            "problem": "A fixed routine can be hard to use when the steps or schedule do not fit.",
+            "advantage": "Next Cue makes steps and weekly reminders editable for each routine.",
+            "header_problem": "a one-size routine",
+            "header_advantage": "editable routine templates",
+            "search_terms": [
+              "custom routine planner",
+              "scheduled routines"
+            ],
+            "proof": "The editor shows routine templates, editable steps, reminder time, and selected weekdays. The Pro requirement for adding another routine is named in the header."
+          },
+          "source": "/Users/jackwallner/adhd/app-store/asc/captures/06-editor.png",
+          "source_sha256": "570ac2abda645b5d73bfe7c52e599ed201dadf288a20f3d328cc6a40a5bcf317",
+          "background_asset": null,
+          "background_asset_sha256": null,
+          "background_override": null,
+          "foreground": "manifests/one-clear-next-step/06-build-routines-your-way-with-pro.foreground.png",
+          "foreground_sha256": "ec3d2d5203e8485e6eaaa1215eda9fa7d1e6ba0fa8a055e2cccba525ff533c8d",
+          "ui_mask": "manifests/one-clear-next-step/06-build-routines-your-way-with-pro.ui-mask.png",
+          "ui_coverage": 0.6066,
+          "imagegen_received_ui_source": false,
+          "target": "iphone_69",
+          "size": [
+            1320,
+            2868
+          ],
+          "background_mode": "theme",
+          "background_id": "theme",
+          "background_top": "#F4F1E8",
+          "background_bottom": "#E5EBE6",
+          "background_asset_applied": false,
+          "phone": {
+            "x": 126,
+            "y": 560,
+            "width": 1067,
+            "height": 2273,
+            "screen_x": 146,
+            "screen_y": 580,
+            "screen_width": 1027,
+            "screen_height": 2233,
+            "source_crop_top": 0,
+            "source_crop_bottom": 0
+          },
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 144,
+          "header_lines": 2,
+          "header_text": "Build routines your way with Pro",
+          "header_bounds": [
+            130,
+            152,
+            1189,
+            430
+          ],
+          "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/06-editor.png",
+          "source_evidence_sha256": "570ac2abda645b5d73bfe7c52e599ed201dadf288a20f3d328cc6a40a5bcf317",
+          "manifest": "manifests/one-clear-next-step/06-build-routines-your-way-with-pro.json"
+        }
+      ]
+    }
+  ]
+}

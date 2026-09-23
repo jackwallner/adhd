@@ -1,0 +1,384 @@
+{
+  "app": "nextcue",
+  "display_name": "Next Cue",
+  "target": "iphone_69",
+  "copy_contract": "single-header-benefit-story-v3",
+  "market": {
+    "category": "Daily routine planners",
+    "audience": "Adults who want a lightweight way to begin and resume personal routines, including people looking for ADHD-friendly structure",
+    "problem": "Broad planners can show many tasks at once, while an interruption can make it hard to find where a routine left off.",
+    "advantage": "Next Cue puts one scheduled routine first, guides the user through one visible step at a time, and saves a paused run for later. The first routine is free; Pro adds more routines.",
+    "competitive_context": "Routine apps range from full-day visual planners to timer-led habit trackers. Next Cue focuses on a scheduled personal routine, one current step, and a calm way to return after an interruption, without streak pressure or a countdown timer.",
+    "search_intent": [
+      "ADHD routine app",
+      "daily routine planner",
+      "step by step routine",
+      "morning routine planner",
+      "evening routine planner",
+      "executive function planner"
+    ],
+    "proof_points": [
+      {
+        "claim": "The Today screen leads with one scheduled routine and a direct start action.",
+        "source": "captures/01-home.png"
+      },
+      {
+        "claim": "The run screen keeps the current step, progress, and completion controls visible together.",
+        "source": "captures/02-run.png"
+      },
+      {
+        "claim": "The paused run keeps the current step available with a clear resume action.",
+        "source": "captures/03-paused.png"
+      },
+      {
+        "claim": "The completion screen confirms the finished routine without a timer or streak count.",
+        "source": "captures/04-complete.png"
+      },
+      {
+        "claim": "The routine library keeps separate morning and evening routines with their own schedules.",
+        "source": "captures/05-routines.png"
+      },
+      {
+        "claim": "The editor offers templates plus editable steps and per-step time estimates.",
+        "source": "captures/06-editor.png"
+      }
+    ]
+  },
+  "capture_report": "captures/capture-report.json",
+  "theme": {
+    "background": "#F4F1E8",
+    "background_2": "#E5EBE6",
+    "ink": "#193F3A",
+    "muted": "#65746F",
+    "accent": "#376E71",
+    "accent_2": "#D98450",
+    "headline_font": "rounded",
+    "body_font": "sans",
+    "icon_source": "../../NextCue/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
+  },
+  "capture": {
+    "mode": "generic",
+    "lease": "adhd-shots",
+    "project_root": "/Users/jackwallner/adhd",
+    "project": "NextCue.xcodeproj",
+    "scheme": "NextCue",
+    "app_name": "NextCue",
+    "bundle_id": "com.jackwallner.adhd",
+    "generate_project": true,
+    "launch_args": [
+      "-SeedScreenshotData"
+    ],
+    "flows": [
+      {
+        "id": "home",
+        "launch_args": [
+          "-DemoPro",
+          "-Screen",
+          "home"
+        ],
+        "ready_labels": [
+          "What’s next?",
+          "Start routine"
+        ],
+        "screenshots": [
+          {
+            "name": "01-home.png"
+          }
+        ]
+      },
+      {
+        "id": "run",
+        "launch_args": [
+          "-Screen",
+          "run"
+        ],
+        "ready_labels": [
+          "Get out of bed",
+          "Done with this step"
+        ],
+        "screenshots": [
+          {
+            "name": "02-run.png"
+          }
+        ]
+      },
+      {
+        "id": "paused",
+        "launch_args": [
+          "-Screen",
+          "paused"
+        ],
+        "ready_labels": [
+          "Paused. Come back whenever you’re ready.",
+          "Resume"
+        ],
+        "screenshots": [
+          {
+            "name": "03-paused.png"
+          }
+        ]
+      },
+      {
+        "id": "complete",
+        "launch_args": [
+          "-Screen",
+          "complete"
+        ],
+        "ready_labels": [
+          "That’s a wrap.",
+          "You finished the steps in Morning start"
+        ],
+        "screenshots": [
+          {
+            "name": "04-complete.png"
+          }
+        ]
+      },
+      {
+        "id": "routines",
+        "launch_args": [
+          "-DemoPro",
+          "-Screen",
+          "routines"
+        ],
+        "ready_labels": [
+          "Routines",
+          "Morning start",
+          "Evening reset"
+        ],
+        "screenshots": [
+          {
+            "name": "05-routines.png"
+          }
+        ]
+      },
+      {
+        "id": "editor",
+        "launch_args": [
+          "-DemoPro",
+          "-Screen",
+          "editor"
+        ],
+        "ready_labels": [
+          "Name your routine",
+          "Your steps",
+          "Reminder"
+        ],
+        "screenshots": [
+          {
+            "name": "06-editor.png"
+          }
+        ]
+      }
+    ]
+  },
+  "sets": [
+    {
+      "id": "one-clear-next-step",
+      "submission": true,
+      "style": "quiet-next-step",
+      "story": {
+        "throughline": "Make a routine easier to begin, follow, and return to when the day interrupts",
+        "sequence": [
+          "problem",
+          "mechanism",
+          "proof"
+        ]
+      },
+      "frames": [
+        {
+          "filename": "01-make-routines-easier-to-start.png",
+          "header": "Make routines easier to start",
+          "story_role": "problem",
+          "story_focus": "routines easier to start",
+          "pitch": {
+            "benefit": "See one scheduled routine and a direct way to begin",
+            "problem": "A broad list of tasks can leave the first action unclear.",
+            "advantage": "Today leads with the next scheduled routine and a clear start action.",
+            "header_problem": "too many possible tasks",
+            "header_advantage": "one next routine",
+            "search_terms": [
+              "ADHD routine app",
+              "daily routine planner"
+            ],
+            "proof": "The literal Today screen shows the next routine, its schedule, and Start routine. This frame uses a seeded Pro state because the sample includes morning and evening routines."
+          },
+          "source": "captures/01-home.png",
+          "source_evidence": "captures/01-home.png",
+          "capture_flow": "home",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 116,
+            "header_size": 164,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "phone_top": 560,
+            "bottom_margin": 36,
+            "phone_width": 1120
+          }
+        },
+        {
+          "filename": "02-keep-the-next-step-in-view.png",
+          "header": "Keep the next step in view",
+          "story_role": "mechanism",
+          "story_focus": "the next step in view",
+          "pitch": {
+            "benefit": "Follow the current step without scanning the full routine",
+            "problem": "A checklist can still leave a person deciding which task to do now.",
+            "advantage": "The run screen puts one current step, progress, and step controls together.",
+            "header_problem": "choosing from a checklist",
+            "header_advantage": "one current step",
+            "search_terms": [
+              "step by step routine",
+              "morning routine planner"
+            ],
+            "proof": "The real run screen shows Get out of bed as the current step, with progress and Done with this step."
+          },
+          "source": "captures/02-run.png",
+          "source_evidence": "captures/02-run.png",
+          "capture_flow": "run",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 116,
+            "header_size": 164,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "phone_top": 560,
+            "bottom_margin": 36,
+            "phone_width": 1120
+          }
+        },
+        {
+          "filename": "03-pick-up-again-after-a-pause.png",
+          "header": "Pick up again after a pause",
+          "story_role": "proof",
+          "story_focus": "again after a pause",
+          "pitch": {
+            "benefit": "Return to an unfinished routine at its saved step",
+            "problem": "An interruption can break a run and make the next action hard to find again.",
+            "advantage": "Next Cue saves the current run so the person can pause and resume later.",
+            "header_problem": "a broken routine",
+            "header_advantage": "a saved next step",
+            "search_terms": [
+              "resume routine",
+              "routine reminders"
+            ],
+            "proof": "The paused screen shows the preserved current step and Resume. A store test also verifies that progress survives relaunch."
+          },
+          "source": "captures/03-paused.png",
+          "source_evidence": "captures/03-paused.png",
+          "capture_flow": "paused",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 116,
+            "header_size": 164,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "phone_top": 560,
+            "bottom_margin": 36,
+            "phone_width": 1120
+          }
+        },
+        {
+          "filename": "04-finish-at-your-own-pace.png",
+          "header": "Finish a routine at your own pace",
+          "story_role": "support",
+          "story_focus": "a routine at your own pace",
+          "pitch": {
+            "benefit": "Finish a routine without a countdown or a streak requirement",
+            "problem": "Timed routines and streak pressure can make a flexible routine feel like a test.",
+            "advantage": "Next Cue tracks completed steps and leaves the user free to return when it fits.",
+            "header_problem": "timer and streak pressure",
+            "header_advantage": "progress at your pace",
+            "search_terms": [
+              "flexible daily routine",
+              "routine planner"
+            ],
+            "proof": "The completion screen celebrates finishing and invites the user back whenever the routine fits."
+          },
+          "source": "captures/04-complete.png",
+          "source_evidence": "captures/04-complete.png",
+          "capture_flow": "complete",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 116,
+            "header_size": 164,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "phone_top": 560,
+            "bottom_margin": 36,
+            "phone_width": 1120
+          }
+        },
+        {
+          "filename": "05-plan-more-routines-with-pro.png",
+          "header": "Plan more routines with Pro",
+          "story_role": "support",
+          "story_focus": "more routines with Pro",
+          "pitch": {
+            "benefit": "Keep separate morning and evening routines in one library",
+            "problem": "One routine may not fit every part of a day.",
+            "advantage": "Next Cue Pro adds more routines while the first routine stays free.",
+            "header_problem": "one routine for every part of the day",
+            "header_advantage": "separate routines with Pro",
+            "search_terms": [
+              "morning and evening routine",
+              "multiple routines"
+            ],
+            "proof": "The library shows the seeded morning and evening routines. Pro is explicit in the header; the first routine remains free."
+          },
+          "source": "captures/05-routines.png",
+          "source_evidence": "captures/05-routines.png",
+          "capture_flow": "routines",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 116,
+            "header_size": 164,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "phone_top": 560,
+            "bottom_margin": 36,
+            "phone_width": 1120
+          }
+        },
+        {
+          "filename": "06-build-routines-your-way-with-pro.png",
+          "header": "Build routines your way with Pro",
+          "story_role": "support",
+          "story_focus": "routines your way",
+          "pitch": {
+            "benefit": "Start from a template, change each step, and choose the days it fits",
+            "problem": "A fixed routine can be hard to use when the steps or schedule do not fit.",
+            "advantage": "Next Cue makes steps and weekly reminders editable for each routine.",
+            "header_problem": "a one-size routine",
+            "header_advantage": "editable routine templates",
+            "search_terms": [
+              "custom routine planner",
+              "scheduled routines"
+            ],
+            "proof": "The editor shows routine templates, editable steps, reminder time, and selected weekdays. The Pro requirement for adding another routine is named in the header."
+          },
+          "source": "captures/06-editor.png",
+          "source_evidence": "captures/06-editor.png",
+          "capture_flow": "editor",
+          "evidence_status": "canonical",
+          "device": "iphone",
+          "layout": {
+            "header_top": 116,
+            "header_size": 164,
+            "header_min_size": 140,
+            "header_max_lines": 2,
+            "phone_top": 560,
+            "bottom_margin": 36,
+            "phone_width": 1120
+          }
+        }
+      ]
+    }
+  ]
+}

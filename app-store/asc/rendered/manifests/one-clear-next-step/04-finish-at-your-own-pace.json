@@ -1,0 +1,70 @@
+{
+  "filename": "04-finish-at-your-own-pace.png",
+  "path": "one-clear-next-step/04-finish-at-your-own-pace.png",
+  "output_sha256": "f2b3e1834f71d9fd38fec9018c766e2a1aafe144dcc9361942757216db6f5ac1",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Finish a routine at your own pace",
+  "pitch": {
+    "benefit": "Finish a routine without a countdown or a streak requirement",
+    "problem": "Timed routines and streak pressure can make a flexible routine feel like a test.",
+    "advantage": "Next Cue tracks completed steps and leaves the user free to return when it fits.",
+    "header_problem": "timer and streak pressure",
+    "header_advantage": "progress at your pace",
+    "search_terms": [
+      "flexible daily routine",
+      "routine planner"
+    ],
+    "proof": "The completion screen celebrates finishing and invites the user back whenever the routine fits."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/captures/04-complete.png",
+  "source_sha256": "2a05d9707993ffad38cf8ba0d9dbe9adadca4f3308d68c58d029519568c5b6ed",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/one-clear-next-step/04-finish-at-your-own-pace.foreground.png",
+  "foreground_sha256": "1caa8b2c04e8ca5e1f01c9ac336d8eee43fcf57699859b750c51df79ad183297",
+  "ui_mask": "manifests/one-clear-next-step/04-finish-at-your-own-pace.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 152,
+  "header_lines": 2,
+  "header_text": "Finish a routine at your own pace",
+  "header_bounds": [
+    120,
+    154,
+    1199,
+    447
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/captures/04-complete.png",
+  "source_evidence_sha256": "2a05d9707993ffad38cf8ba0d9dbe9adadca4f3308d68c58d029519568c5b6ed"
+}

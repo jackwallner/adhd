@@ -1,0 +1,129 @@
+{
+  "status": "ok",
+  "manifest": "/Users/jackwallner/adhd/app-store/asc/nextcue.json",
+  "app": "nextcue",
+  "mode": "generic",
+  "lease": "adhd-shots",
+  "output": "/Users/jackwallner/adhd/app-store/asc/captures",
+  "proof_only": false,
+  "checkout_options": [],
+  "lease_checked_in": true,
+  "screenshots": [
+    "01-home.png",
+    "02-run.png",
+    "03-paused.png",
+    "04-complete.png",
+    "05-routines.png",
+    "06-editor.png"
+  ],
+  "screenshot_records": [
+    {
+      "name": "01-home.png",
+      "path": "/Users/jackwallner/adhd/app-store/asc/captures/01-home.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "439e3edf871950f6a26514169542defc459ce0b7a0f8a36628a87b3a0ae45f2f"
+    },
+    {
+      "name": "02-run.png",
+      "path": "/Users/jackwallner/adhd/app-store/asc/captures/02-run.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "058ba70681cdf950d30d326d55ee9c1b6b3deecf9ea0305baf2a70c176eeee58"
+    },
+    {
+      "name": "03-paused.png",
+      "path": "/Users/jackwallner/adhd/app-store/asc/captures/03-paused.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "c40b50d3cecb27ff4f6aeee8e4f5048893804dcd991ca9a6f9d6346875f57463"
+    },
+    {
+      "name": "04-complete.png",
+      "path": "/Users/jackwallner/adhd/app-store/asc/captures/04-complete.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "2a05d9707993ffad38cf8ba0d9dbe9adadca4f3308d68c58d029519568c5b6ed"
+    },
+    {
+      "name": "05-routines.png",
+      "path": "/Users/jackwallner/adhd/app-store/asc/captures/05-routines.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "621b595dc312d692a87bca7c01f33701120046a247208b66681aaeb266da6845"
+    },
+    {
+      "name": "06-editor.png",
+      "path": "/Users/jackwallner/adhd/app-store/asc/captures/06-editor.png",
+      "size": [
+        1206,
+        2622
+      ],
+      "mode": "RGBA",
+      "sha256": "570ac2abda645b5d73bfe7c52e599ed201dadf288a20f3d328cc6a40a5bcf317"
+    }
+  ],
+  "flows": [
+    {
+      "id": "home",
+      "screenshots": [
+        "01-home.png"
+      ]
+    },
+    {
+      "id": "run",
+      "screenshots": [
+        "02-run.png"
+      ]
+    },
+    {
+      "id": "paused",
+      "screenshots": [
+        "03-paused.png"
+      ]
+    },
+    {
+      "id": "complete",
+      "screenshots": [
+        "04-complete.png"
+      ]
+    },
+    {
+      "id": "routines",
+      "screenshots": [
+        "05-routines.png"
+      ]
+    },
+    {
+      "id": "editor",
+      "screenshots": [
+        "06-editor.png"
+      ]
+    }
+  ],
+  "app_repo": {
+    "path": "/Users/jackwallner/adhd",
+    "git_commit": "52f759b42bfd37619043362528e6b181dc66a47f"
+  },
+  "device": {
+    "udid": "2C7A80C1-1228-411A-B9AD-A7DEED683F79",
+    "name": "agent-sim-1",
+    "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-5",
+    "device_type": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"
+  }
+}
