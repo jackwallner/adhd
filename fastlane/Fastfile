@@ -10,7 +10,7 @@ def asc_api_key
 end
 
 def verify_app_record(api_key)
-  Spaceship::ConnectAPI.token = api_key
+  Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
   app = Spaceship::ConnectAPI::App.find(APP_IDENTIFIER)
   UI.user_error!("App Store Connect record not found for #{APP_IDENTIFIER}") unless app
   UI.user_error!("Unexpected App Store Connect app ID #{app.id}") unless app.id.to_s == APP_STORE_CONNECT_APP_ID

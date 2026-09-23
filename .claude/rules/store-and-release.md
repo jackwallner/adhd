@@ -27,6 +27,8 @@ The local StoreKit configuration and setup scripts use:
 
 `scripts/asc-setup-subscriptions.py` creates the subscription group, both subscriptions, availability, introductory offers in each territory, USA base prices, and the Vitals PPP subscription prices. PPP points are initial prices for this prelaunch app. Do not run this setup script after subscriptions are live; later price changes must preserve existing subscribers' prices. `scripts/asc-setup-lifetime-iap.py` creates the non-consumable, its availability, localization, and USA price schedule. It leaves existing schedules unchanged. Review ASC products and prices before running either script.
 
+The API does not equalize subscription prices, so run `scripts/asc-fill-subscription-prices.py` after setup. It adds Apple's equalized price for every territory still missing one and keeps the USA and PPP rows. `scripts/asc-complete-listing.py` sets the age rating, categories, copyright, content rights, manual release, and App Review contact (pass `ASC_REVIEW_PHONE`; the number never lives in the repo). `scripts/asc-upload-review-screenshots.py` attaches `app-store/iap-review/paywall-<plan>.png` to each product; regenerate those renders with `PaywallSnapshotUITests` whenever the paywall or a price changes.
+
 Both scripts verify that bundle ID `com.jackwallner.adhd` resolves to app `6815023447`. They load the shared ASC key from environment variables or `~/.baseball_credentials`.
 
 ## Metadata and legal pages
@@ -40,7 +42,7 @@ Both scripts verify that bundle ID `com.jackwallner.adhd` resolves to app `68150
 
 ## First submission checklist
 
-- Add reviewed App Store screenshots under `fastlane/screenshots/en-US/`.
+- App Store screenshots come from `app-store/asc/nextcue.json` via the fleet `shotflow` renderer; the approved set is copied to `fastlane/screenshots/en-US/` and synced with `~/ios/appstore-screenshots/bin/asc-sync-screenshots`.
 - Complete App Privacy, age rating, and review contact in ASC.
 - Attach each in-app purchase to the app version in ASC and provide its review screenshot.
 - Confirm product prices, trial territories, offer eligibility, and PPP price schedules in ASC before uploading metadata or submitting.
