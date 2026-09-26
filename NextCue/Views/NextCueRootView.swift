@@ -4,6 +4,7 @@ import UIKit
 struct NextCueRootView: View {
     @EnvironmentObject private var routines: RoutineStore
     @EnvironmentObject private var purchases: StoreService
+    @EnvironmentObject private var router: NextCueRouter
     @State private var selectedTab: NextCueTab = NextCueDebugLaunch.startsOnRoutinesTab ? .routines : .today
     @State private var launchPrepared = !NextCueDebugLaunch.needsPreparation
     @State private var showPaywallSnapshot = false
@@ -38,10 +39,13 @@ struct NextCueRootView: View {
                 NextCueDebugLaunch.prepare(routines: routines)
                 routines.refreshReminders()
                 launchPrepared = true
+                if NextCueDebugLaunch.opensRoutineRun { router.showRun = true }
             }
             if NextCueDebugLaunch.isPaywallSnapshot { showPaywallSnapshot = true }
         }
         .sheet(isPresented: $showPaywallSnapshot) { NextCuePaywallView() }
+        .fullScreenCover(isPresented: $router.showRun) { RoutineRunView() }
+        .onChange(of: router.todayRequest) { _, _ in selectedTab = .today }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             routines.refreshReminders()
             purchases.start()
@@ -49,9 +53,37 @@ struct NextCueRootView: View {
     }
 }
 
+/// Starting a routine from anywhere: respects the free limit and never starts a second run.
+@MainActor
+enum RoutineLauncher {
+    enum Outcome {
+        case presented
+        case needsPro
+        case failed
+    }
+
+    static func start(
+        _ routine: Routine,
+        shortVersion: Bool = false,
+        routines: RoutineStore,
+        isPro: Bool,
+        router: NextCueRouter
+    ) -> Outcome {
+        guard !NextCueRoutineAccess.requiresPro(routineID: routine.id, routines: routines.routines, isPro: isPro) else {
+            return .needsPro
+        }
+        if routines.activeRun == nil {
+            guard routines.startRun(routineID: routine.id, shortVersion: shortVersion) else { return .failed }
+        }
+        router.showRun = true
+        return .presented
+    }
+}
+
 struct RoutineLibraryView: View {
     @EnvironmentObject private var routines: RoutineStore
     @EnvironmentObject private var purchases: StoreService
+    @EnvironmentObject private var router: NextCueRouter
 
     @State private var showNewRoutine = NextCueDebugLaunch.screen == "editor"
     @State private var showPaywall = false
@@ -60,25 +92,34 @@ struct RoutineLibraryView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
+                VStack(alignment: .leading, spacing: 12) {
                     if routines.routines.isEmpty {
                         emptyState
                     } else {
-                        NextCueSectionTitle(title: "Your routines", trailing: "\(routines.routines.count)")
                         ForEach(routines.routines) { routine in
                             let isLocked = NextCueRoutineAccess.requiresPro(
                                 routineID: routine.id,
                                 routines: routines.routines,
                                 isPro: purchases.isPro
                             )
-                            Button {
-                                if isLocked { showPaywall = true }
-                                else { editingRoutine = routine }
-                            } label: {
-                                RoutineLibraryCard(routine: routine, isLocked: isLocked)
+                            RoutineLibraryCard(
+                                routine: routine,
+                                isLocked: isLocked,
+                                isRunning: routines.activeRun?.routineID == routine.id,
+                                edit: { isLocked ? (showPaywall = true) : (editingRoutine = routine) },
+                                start: { start(routine) }
+                            )
+                            .contextMenu {
+                                if !isLocked {
+                                    Button { start(routine) } label: { Label("Start", systemImage: "play") }
+                                    if routine.hasShortVersion {
+                                        Button { start(routine, shortVersion: true) } label: {
+                                            Label("Start short version", systemImage: "leaf")
+                                        }
+                                    }
+                                    Button { editingRoutine = routine } label: { Label("Edit", systemImage: "pencil") }
+                                }
                             }
-                            .buttonStyle(.plain)
-                            .accessibilityHint(isLocked ? "Opens Next Cue Pro options" : "Opens routine settings")
                         }
 
                         if !purchases.isPro {
@@ -86,12 +127,12 @@ struct RoutineLibraryView: View {
                                 .font(.footnote)
                                 .foregroundStyle(NextCueStyle.secondary)
                                 .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.top, 4)
+                                .padding(.top, 6)
                         }
                     }
                 }
                 .padding(.horizontal, 18)
-                .padding(.top, 16)
+                .padding(.top, 12)
                 .padding(.bottom, 30)
             }
             .background(NextCueStyle.background.ignoresSafeArea())
@@ -126,7 +167,18 @@ struct RoutineLibraryView: View {
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(NextCueStyle.surface, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .padding(.top, 36)
+        .padding(.top, 24)
+    }
+
+    private func start(_ routine: Routine, shortVersion: Bool = false) {
+        let outcome = RoutineLauncher.start(
+            routine,
+            shortVersion: shortVersion,
+            routines: routines,
+            isPro: purchases.isPro,
+            router: router
+        )
+        if outcome == .needsPro { showPaywall = true }
     }
 
     private func addRoutine() {
@@ -153,41 +205,70 @@ enum NextCueRoutineAccess {
 private struct RoutineLibraryCard: View {
     let routine: Routine
     let isLocked: Bool
+    let isRunning: Bool
+    let edit: () -> Void
+    let start: () -> Void
 
     var body: some View {
-        NextCueCard {
+        NextCueCard(padding: 16) {
             HStack(spacing: 14) {
-                NextCueIcon(symbol: "checklist")
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(routine.name)
-                        .font(.system(.headline, design: .rounded).weight(.bold))
-                        .foregroundStyle(NextCueStyle.ink)
-                    Text("\(routine.steps.count) \(routine.steps.count == 1 ? "step" : "steps") · \(NextCueSchedule.label(for: routine.schedule, remindersEnabled: routine.reminderEnabled))")
-                        .font(.subheadline)
-                        .foregroundStyle(NextCueStyle.secondary)
+                Button(action: edit) {
+                    HStack(spacing: 14) {
+                        NextCueIcon(symbol: isLocked ? "lock.fill" : "checklist")
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(routine.name)
+                                .font(.system(.headline, design: .rounded).weight(.bold))
+                                .foregroundStyle(NextCueStyle.ink)
+                                .multilineTextAlignment(.leading)
+                            Text("\(NextCueFormat.steps(routine.steps.count)) · about \(NextCueFormat.minutes(routine.estimatedMinutes))")
+                                .font(.subheadline)
+                                .foregroundStyle(NextCueStyle.secondary)
+                            Text(NextCueSchedule.label(for: routine.schedule, remindersEnabled: routine.reminderEnabled))
+                                .font(.subheadline)
+                                .foregroundStyle(NextCueStyle.secondary)
+                        }
+                        Spacer(minLength: 0)
+                    }
+                    .contentShape(Rectangle())
                 }
-                Spacer(minLength: 0)
-                Image(systemName: isLocked ? "lock.fill" : "chevron.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(isLocked ? NextCueStyle.accent : NextCueStyle.secondary.opacity(0.8))
-                    .accessibilityHidden(true)
+                .buttonStyle(.plain)
+                .accessibilityElement(children: .combine)
+                .accessibilityHint(isLocked ? "Opens Next Cue Pro options" : "Opens routine settings")
+
+                if !isLocked {
+                    Button(action: start) {
+                        Image(systemName: isRunning ? "arrow.right" : "play.fill")
+                            .font(.subheadline.weight(.bold))
+                            .foregroundStyle(NextCueStyle.onAccent)
+                            .frame(width: 44, height: 44)
+                            .background(NextCueStyle.accent, in: Circle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(isRunning ? "Return to \(routine.name)" : "Start \(routine.name)")
+                }
             }
         }
-        .accessibilityElement(children: .combine)
     }
 }
 
 enum NextCueSchedule {
     static func label(for schedule: RoutineSchedule, remindersEnabled: Bool = true) -> String {
-        guard remindersEnabled, !schedule.weekdays.isEmpty else { return "No reminder" }
-        let hour = schedule.hour % 12 == 0 ? 12 : schedule.hour % 12
-        let minute = schedule.minute < 10 ? "0\(schedule.minute)" : "\(schedule.minute)"
-        let period = schedule.hour < 12 ? "AM" : "PM"
-        let time = "\(hour):\(minute) \(period)"
-        let days = schedule.weekdays.sorted().compactMap { weekday -> String? in
-            guard let day = NextCueWeekday(rawValue: weekday) else { return nil }
-            return String(day.fullName.prefix(3))
+        guard remindersEnabled, !schedule.weekdays.isEmpty else { return "Anytime" }
+        return "\(days(schedule.weekdays)) · \(NextCueFormat.time(hour: schedule.hour, minute: schedule.minute))"
+    }
+
+    static func days(_ weekdays: Set<Int>) -> String {
+        switch weekdays {
+        case Set(1...7): return "Daily"
+        case [2, 3, 4, 5, 6]: return "Weekdays"
+        case [1, 7]: return "Weekends"
+        default:
+            let symbols = Calendar.current.shortWeekdaySymbols
+            let firstWeekday = Calendar.current.firstWeekday
+            return weekdays
+                .sorted { ($0 - firstWeekday + 7) % 7 < ($1 - firstWeekday + 7) % 7 }
+                .map { symbols[$0 - 1] }
+                .joined(separator: ", ")
         }
-        return days.count == 7 ? "Daily · \(time)" : "\(days.joined(separator: ", ")) · \(time)"
     }
 }

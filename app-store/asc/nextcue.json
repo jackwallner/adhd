@@ -94,7 +94,7 @@
         ],
         "ready_labels": [
           "Get out of bed",
-          "Done with this step"
+          "Done"
         ],
         "screenshots": [
           {
@@ -109,7 +109,7 @@
           "paused"
         ],
         "ready_labels": [
-          "Paused. Come back whenever you’re ready.",
+          "Paused. Your place is saved.",
           "Resume"
         ],
         "screenshots": [
@@ -126,7 +126,7 @@
         ],
         "ready_labels": [
           "That’s a wrap.",
-          "You finished the steps in Morning start"
+          "Every step of Morning start, done."
         ],
         "screenshots": [
           {

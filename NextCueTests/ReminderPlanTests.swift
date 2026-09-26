@@ -61,4 +61,44 @@ final class ReminderPlanTests: XCTestCase {
         XCTAssertTrue(pausedPlan.isEmpty)
         XCTAssertTrue(disabledPlan.isEmpty)
     }
+
+    func testReminderNamesTheFirstStep() throws {
+        let now = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
+        let routine = Routine(
+            name: "Morning",
+            steps: [RoutineStep(name: "Get out of bed")],
+            schedule: RoutineSchedule(hour: 8, minute: 0, weekdays: Set(1...7))
+        )
+
+        let reminder = try XCTUnwrap(ReminderPlan.reminders(routines: [routine], completions: [], activeRun: nil, now: now).first)
+
+        XCTAssertEqual(reminder.body, "Just the first step: Get out of bed.")
+    }
+
+    func testNudgeFiresAfterEstimatePlusGraceAndNotWhilePaused() throws {
+        let start = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
+        let routine = Routine(name: "Morning", steps: [
+            RoutineStep(name: "Get dressed", estimateMinutes: 8),
+            RoutineStep(name: "Eat", estimateMinutes: 10),
+        ])
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, at: start))
+
+        let nudge = try XCTUnwrap(ReminderPlan.nudge(for: run, now: start.addingTimeInterval(60)))
+        XCTAssertEqual(nudge.fireAt, start.addingTimeInterval(480 + 240))
+        XCTAssertTrue(nudge.title.contains("Get dressed"))
+        XCTAssertTrue(nudge.body.contains("Next up: Eat."))
+
+        RoutineEngine.pause(&run, at: start.addingTimeInterval(90))
+        XCTAssertNil(ReminderPlan.nudge(for: run, now: start.addingTimeInterval(100)))
+    }
+
+    func testNudgeIdentifierChangesWithEachStep() throws {
+        let routine = Routine(name: "Morning", steps: [RoutineStep(name: "A"), RoutineStep(name: "B")])
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine))
+        let first = try XCTUnwrap(ReminderPlan.nudge(for: run))
+        XCTAssertTrue(RoutineEngine.completeCurrentStep(&run))
+        let second = try XCTUnwrap(ReminderPlan.nudge(for: run))
+
+        XCTAssertNotEqual(first.id, second.id)
+    }
 }

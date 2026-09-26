@@ -61,6 +61,26 @@ targets:
     dependencies:
       - package: RevenueCat
         product: RevenueCat
+      - target: NextCueWidget
+
+  NextCueWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: NextCueWidget
+        excludes:
+          - Info.plist
+          - PrivacyInfo.xcprivacy
+      - path: NextCueWidget/PrivacyInfo.xcprivacy
+        buildPhase: resources
+      - path: Shared/LiveActivity/RunActivityAttributes.swift
+      - path: Shared/LiveActivity/RunIntents.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jackwallner.adhd.widget
+        INFOPLIST_FILE: NextCueWidget/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: "$(inherited) WIDGET_EXTENSION"
 
   NextCueTests:
     type: bundle.unit-test

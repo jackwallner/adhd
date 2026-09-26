@@ -88,4 +88,85 @@ final class RoutineEngineTests: XCTestCase {
         XCTAssertFalse(RoutineEngine.hasCompletion(for: routineID, on: completedAt, completions: [partial]))
         XCTAssertTrue(RoutineEngine.hasCompletion(for: routineID, on: completedAt, completions: [full]))
     }
+
+    func testShortVersionLeavesOutOptionalSteps() throws {
+        let routine = Routine(name: "Morning", steps: [
+            RoutineStep(name: "Get up"),
+            RoutineStep(name: "Make the bed", isOptional: true),
+            RoutineStep(name: "Eat"),
+        ])
+
+        let run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, shortVersion: true))
+
+        XCTAssertTrue(run.isShortVersion)
+        XCTAssertEqual(run.steps.map(\.name), ["Get up", "Eat"])
+    }
+
+    func testShortVersionFallsBackWhenEveryStepIsOptional() throws {
+        let routine = Routine(name: "Tidy", steps: [RoutineStep(name: "Desk", isOptional: true)])
+
+        let run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, shortVersion: true))
+
+        XCTAssertFalse(routine.hasShortVersion)
+        XCTAssertFalse(run.isShortVersion)
+        XCTAssertEqual(run.steps.count, 1)
+    }
+
+    func testDoLaterMovesStepToEndAndBackUndoesIt() throws {
+        let start = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
+        let routine = Routine(name: "Out", steps: [
+            RoutineStep(name: "Shower"),
+            RoutineStep(name: "Dress"),
+            RoutineStep(name: "Shoes"),
+        ])
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, at: start))
+
+        XCTAssertTrue(RoutineEngine.doCurrentStepLater(&run, at: start.addingTimeInterval(30)))
+        XCTAssertEqual(run.steps.map(\.name), ["Dress", "Shoes", "Shower"])
+        XCTAssertEqual(run.currentStep?.name, "Dress")
+
+        XCTAssertTrue(RoutineEngine.moveBack(&run, at: start.addingTimeInterval(40)))
+        XCTAssertEqual(run.steps.map(\.name), ["Shower", "Dress", "Shoes"])
+        XCTAssertEqual(run.currentStep?.name, "Shower")
+        XCTAssertEqual(RoutineEngine.stepElapsedSeconds(for: run, at: start.addingTimeInterval(40)), 30)
+    }
+
+    func testLastRemainingStepCannotBeDoneLater() throws {
+        let routine = Routine(name: "One", steps: [RoutineStep(name: "Only")])
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine))
+
+        XCTAssertFalse(RoutineEngine.doCurrentStepLater(&run))
+    }
+
+    func testMoveBackRestoresDoneAndSkippedSteps() throws {
+        let routine = Routine(name: "Morning", steps: [
+            RoutineStep(name: "A"),
+            RoutineStep(name: "B"),
+            RoutineStep(name: "C"),
+        ])
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine))
+        XCTAssertTrue(RoutineEngine.completeCurrentStep(&run))
+        XCTAssertTrue(RoutineEngine.skipCurrentStep(&run))
+
+        XCTAssertTrue(RoutineEngine.moveBack(&run))
+        XCTAssertEqual(run.currentStep?.name, "B")
+        XCTAssertEqual(run.completedStepCount, 1)
+        XCTAssertTrue(RoutineEngine.moveBack(&run))
+        XCTAssertEqual(run.currentStep?.name, "A")
+        XCTAssertEqual(run.completedStepCount, 0)
+        XCTAssertFalse(RoutineEngine.moveBack(&run))
+    }
+
+    func testStepTimeExcludesPausedTime() throws {
+        let start = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
+        let routine = Routine(name: "Morning", steps: [RoutineStep(name: "A"), RoutineStep(name: "B")])
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, at: start))
+        XCTAssertTrue(RoutineEngine.completeCurrentStep(&run, at: start.addingTimeInterval(100)))
+        RoutineEngine.pause(&run, at: start.addingTimeInterval(160))
+        RoutineEngine.resume(&run, at: start.addingTimeInterval(1_000))
+
+        XCTAssertEqual(RoutineEngine.stepElapsedSeconds(for: run, at: start.addingTimeInterval(1_020)), 80)
+        XCTAssertEqual(RoutineEngine.elapsedSeconds(for: run, at: start.addingTimeInterval(1_020)), 180)
+        XCTAssertEqual(run.history.first?.seconds, 100)
+    }
 }

@@ -1,3 +1,4 @@
+import ActivityKit
 import SwiftUI
 import UIKit
 import UserNotifications
@@ -10,11 +11,16 @@ struct SettingsView: View {
 
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var showPaywall = false
+    @State private var liveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
+    @AppStorage(NextCuePreferences.stepNudgesKey) private var stepNudges = true
+    @AppStorage(NextCuePreferences.stepTimerKey) private var stepTimer = true
+    @AppStorage(NextCuePreferences.keepAwakeKey) private var keepAwake = true
 
     var body: some View {
         NavigationStack {
             Form {
                 remindersSection
+                runSection
                 subscriptionSection
                 privacySection
                 feedbackSection
@@ -38,6 +44,7 @@ struct SettingsView: View {
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                 Task {
                     routines.refreshReminders()
+                    liveActivitiesEnabled = ActivityAuthorizationInfo().areActivitiesEnabled
                     await refreshNotificationStatus()
                 }
             }
@@ -63,6 +70,36 @@ struct SettingsView: View {
             Text("Reminders")
         } footer: {
             Text("Set a time and days inside each routine. Reminders follow the schedule you choose.")
+        }
+    }
+
+    private var runSection: some View {
+        Section {
+            Toggle(isOn: $stepNudges) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Check in if I drift")
+                    Text("One gentle notification when a step runs well past its time.")
+                        .font(.footnote)
+                        .foregroundStyle(NextCueStyle.secondary)
+                }
+            }
+            .onChange(of: stepNudges) { _, _ in routines.refreshReminders() }
+            Toggle(isOn: $stepTimer) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Show time on each step")
+                    Text("Counts up next to the estimate. It never counts down.")
+                        .font(.footnote)
+                        .foregroundStyle(NextCueStyle.secondary)
+                }
+            }
+            Toggle("Keep the screen on", isOn: $keepAwake)
+            LabeledContent("Lock Screen controls", value: liveActivitiesEnabled ? "On" : "Off")
+        } header: {
+            Text("During a routine")
+        } footer: {
+            Text(liveActivitiesEnabled
+                 ? "While a routine runs, the current step and a Done button stay on your Lock Screen and in the Dynamic Island."
+                 : "Turn on Live Activities for Next Cue in the Settings app to keep the current step and a Done button on your Lock Screen.")
         }
     }
 

@@ -9,9 +9,19 @@ private struct RoutineStoreSnapshot: Codable, Sendable {
     var completions: [RoutineCompletion] = []
 }
 
+/// Mirrors the active run somewhere outside the app, such as a Live Activity.
+@MainActor
+protocol RunMirroring: AnyObject {
+    /// `finishedRunID` names a run that just ended by finishing its last step, as opposed to being cancelled.
+    func sync(run: RoutineRun?, finishedRunID: UUID?, now: Date)
+}
+
 @MainActor
 final class RoutineStore: ObservableObject {
-    static let shared = RoutineStore(reminderService: ReminderService.shared)
+    /// A running step left alone longer than this on relaunch is treated as interrupted.
+    static let interruptionThreshold: TimeInterval = 2 * 60 * 60
+
+    static let shared = RoutineStore(reminderService: ReminderService.shared, runMirror: LiveActivityService.shared)
 
     @Published private(set) var routines: [Routine] = []
     @Published private(set) var activeRun: RoutineRun?
@@ -20,23 +30,27 @@ final class RoutineStore: ObservableObject {
 
     private let fileURL: URL
     private let reminderService: ReminderScheduling?
+    private let runMirror: RunMirroring?
     private let logger = Logger(subsystem: "NextCue", category: "RoutineStore")
     private let historyLimit = 1_000
+    /// The run the last step just finished, kept in memory so an accidental final tap can be undone.
+    private var justFinished: (run: RoutineRun, completionID: UUID)?
     private var canWrite = true
 
-    init(fileURL: URL? = nil, reminderService: ReminderScheduling? = nil, now: Date = .now) {
+    init(
+        fileURL: URL? = nil,
+        reminderService: ReminderScheduling? = nil,
+        runMirror: RunMirroring? = nil,
+        now: Date = .now,
+        calendar: Calendar = .current
+    ) {
         self.fileURL = fileURL ?? Self.defaultFileURL
         self.reminderService = reminderService
+        self.runMirror = runMirror
         load()
         reminderService?.configure()
-
-        if var run = activeRun, !run.isPaused {
-            RoutineEngine.recoverAfterInterruption(&run, at: now)
-            if !commit({ $0.activeRun = run }) {
-                activeRun = run
-            }
-        }
-        propagateReminders(now: now)
+        recoverActiveRun(now: now, calendar: calendar)
+        propagate(now: now)
     }
 
     func saveRoutine(_ routine: Routine) -> Bool {
@@ -57,10 +71,11 @@ final class RoutineStore: ObservableObject {
     }
 
     @discardableResult
-    func startRun(routineID: UUID, now: Date = .now) -> Bool {
+    func startRun(routineID: UUID, shortVersion: Bool = false, now: Date = .now) -> Bool {
+        justFinished = nil
         guard activeRun == nil,
               let routine = routines.first(where: { $0.id == routineID }),
-              let run = RoutineEngine.makeRun(for: routine, at: now) else { return false }
+              let run = RoutineEngine.makeRun(for: routine, shortVersion: shortVersion, at: now) else { return false }
         return commit { $0.activeRun = run }
     }
 
@@ -81,6 +96,19 @@ final class RoutineStore: ObservableObject {
         if run.currentStepIndex == run.steps.count {
             return finish(run, at: now)
         }
+        return commit { $0.activeRun = run }
+    }
+
+    @discardableResult
+    func doCurrentStepLater(now: Date = .now) -> Bool {
+        guard var run = activeRun, RoutineEngine.doCurrentStepLater(&run, at: now) else { return false }
+        return commit { $0.activeRun = run }
+    }
+
+    /// Undoes the last done, skip, or later.
+    @discardableResult
+    func moveBack(now: Date = .now) -> Bool {
+        guard var run = activeRun, RoutineEngine.moveBack(&run, at: now) else { return false }
         return commit { $0.activeRun = run }
     }
 
@@ -114,6 +142,7 @@ final class RoutineStore: ObservableObject {
     @discardableResult
     func cancelRun() -> Bool {
         guard activeRun != nil else { return false }
+        justFinished = nil
         return commit { $0.activeRun = nil }
     }
 
@@ -127,22 +156,49 @@ final class RoutineStore: ObservableObject {
             .sorted { $0.completedAt > $1.completedAt }
     }
 
+    func completion(forRun runID: UUID) -> RoutineCompletion? {
+        completions.last { $0.runID == runID }
+    }
+
     func completedToday(for routineID: UUID, now: Date = .now, calendar: Calendar = .current) -> Bool {
         RoutineEngine.hasCompletion(for: routineID, on: now, completions: completions, calendar: calendar)
     }
 
-    /// Rebuilds pending local reminders. Call after notification permission changes and on app foreground.
+    /// Rebuilds pending local reminders and the Live Activity. Call after permission or preference changes and on app foreground.
     func refreshReminders(now: Date = .now) {
-        propagateReminders(now: now)
+        propagate(now: now)
     }
 
     private func finish(_ run: RoutineRun, at date: Date) -> Bool {
         let completion = RoutineEngine.completion(for: run, at: date)
-        return commit { snapshot in
+        justFinished = (run, completion.id)
+        let saved = commit { snapshot in
             snapshot.activeRun = nil
             snapshot.completions.append(completion)
             snapshot.completions = Array(snapshot.completions.suffix(self.historyLimit))
         }
+        if !saved { justFinished = nil }
+        return saved
+    }
+
+    func canUndoFinish(_ completion: RoutineCompletion) -> Bool {
+        activeRun == nil && justFinished?.completionID == completion.id
+    }
+
+    /// Reopens the run that the last step finished, back on that step.
+    @discardableResult
+    func undoFinish(now: Date = .now) -> Bool {
+        guard activeRun == nil, let finished = justFinished else { return false }
+        var run = finished.run
+        run.lastResumedAt = now
+        run.pausedAt = nil
+        guard RoutineEngine.moveBack(&run, at: now) else { return false }
+        let saved = commit { snapshot in
+            snapshot.activeRun = run
+            snapshot.completions.removeAll { $0.id == finished.completionID }
+        }
+        if saved { justFinished = nil }
+        return saved
     }
 
     @discardableResult
@@ -155,7 +211,7 @@ final class RoutineStore: ObservableObject {
             try persist(snapshot)
             apply(snapshot)
             persistenceError = nil
-            propagateReminders()
+            propagate()
             return true
         } catch {
             persistenceError = "Your change could not be saved. Please try again."
@@ -201,13 +257,39 @@ final class RoutineStore: ObservableObject {
         try data.write(to: fileURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
     }
 
-    private func propagateReminders(now: Date = .now) {
+    private func propagate(now: Date = .now) {
         reminderService?.reschedule(
             routines: routines,
             completions: completions,
             activeRun: activeRun,
             now: now
         )
+        runMirror?.sync(run: activeRun, finishedRunID: justFinished?.run.id, now: now)
+    }
+
+    /// A run from an earlier day is closed as a partial record so it cannot block today's reminders.
+    /// A run left running for hours resumes paused, since the app cannot know how long it was set aside.
+    private func recoverActiveRun(now: Date, calendar: Calendar) {
+        guard var run = activeRun else { return }
+        if !calendar.isDate(run.startedAt, inSameDayAs: now) {
+            RoutineEngine.recoverAfterInterruption(&run, at: now)
+            let closedAt = run.startedAt.addingTimeInterval(run.elapsedSeconds)
+            let completion = RoutineEngine.completion(for: run, at: closedAt)
+            if !commit({ snapshot in
+                snapshot.activeRun = nil
+                snapshot.completions.append(completion)
+                snapshot.completions = Array(snapshot.completions.suffix(self.historyLimit))
+            }) {
+                activeRun = nil
+            }
+            return
+        }
+        guard !run.isPaused, let resumedAt = run.lastResumedAt,
+              now.timeIntervalSince(resumedAt) > Self.interruptionThreshold else { return }
+        RoutineEngine.recoverAfterInterruption(&run, at: now)
+        if !commit({ $0.activeRun = run }) {
+            activeRun = run
+        }
     }
 
     private static var defaultFileURL: URL {

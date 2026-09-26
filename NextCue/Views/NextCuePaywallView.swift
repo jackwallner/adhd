@@ -127,7 +127,7 @@ struct NextCuePaywallView: View {
             Button(action: purchaseSelected) {
                 ZStack {
                     Text(purchaseButtonTitle).opacity(purchases.isPurchasing ? 0 : 1)
-                    if purchases.isPurchasing { ProgressView().tint(.white) }
+                    if purchases.isPurchasing { ProgressView().tint(NextCueStyle.onAccent) }
                 }
             }
             .buttonStyle(NextCuePrimaryButtonStyle())

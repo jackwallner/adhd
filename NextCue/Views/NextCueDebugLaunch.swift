@@ -49,6 +49,15 @@ enum NextCueDebugLaunch {
 
     static var sampleRoutineName: String { "Morning start" }
 
+    /// Captures and UI tests must not leave a Live Activity behind for the next run.
+    static var suppressesLiveActivity: Bool {
+        #if DEBUG
+        needsPreparation || hasArgument("-ResetUITestData")
+        #else
+        false
+        #endif
+    }
+
     @MainActor
     static func prepare(routines: RoutineStore) {
         #if DEBUG
@@ -82,10 +91,12 @@ enum NextCueDebugLaunch {
         let morning = Routine(
             name: sampleRoutineName,
             steps: [
-                RoutineStep(name: "Get out of bed", details: "Put both feet on the floor", estimateMinutes: 2),
-                RoutineStep(name: "Get dressed", details: nil, estimateMinutes: 8),
+                RoutineStep(name: "Get out of bed", details: "Both feet on the floor", estimateMinutes: 2),
+                RoutineStep(name: "Drink a glass of water", estimateMinutes: 1),
+                RoutineStep(name: "Get dressed", estimateMinutes: 8),
+                RoutineStep(name: "Make the bed", details: "Good enough is fine", estimateMinutes: 3, isOptional: true),
                 RoutineStep(name: "Eat something", details: "Keep it simple", estimateMinutes: 10),
-                RoutineStep(name: "Gather what I need", details: nil, estimateMinutes: 4)
+                RoutineStep(name: "Gather what I need", estimateMinutes: 4, isOptional: true)
             ],
             schedule: RoutineSchedule(hour: 8, minute: 0, weekdays: [2, 3, 4, 5, 6]),
             isEnabled: true,
@@ -98,6 +109,7 @@ enum NextCueDebugLaunch {
             name: "Evening reset",
             steps: [
                 RoutineStep(name: "Set out tomorrow’s clothes", estimateMinutes: 4),
+                RoutineStep(name: "Tidy one surface", estimateMinutes: 5, isOptional: true),
                 RoutineStep(name: "Charge my phone", estimateMinutes: 1),
                 RoutineStep(name: "Put keys by the door", estimateMinutes: 2)
             ],

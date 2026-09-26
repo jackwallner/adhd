@@ -23,6 +23,7 @@ struct NextCueApp: App {
             NextCueRootView()
                 .environmentObject(routines)
                 .environmentObject(purchases)
+                .environmentObject(NextCueRouter.shared)
         }
     }
 
