@@ -23,4 +23,4 @@ An ADHD routine companion that helps people plan daily steps and see what to do 
 - `.claude/rules/store-and-release.md`: ASC setup scripts, metadata rules, subscription defaults, and release steps.
 
 ---
-Shared iOS conventions (build, simulator, release/TestFlight, ASC credentials, signing, and review funnel) are in the global `AGENTS.md` and `ios-dev` skill.
+Shared iOS conventions (build, simulator, release/TestFlight, ASC credentials, signing, and review funnel) are in the global agent rules and the `ios-dev` skill.
