@@ -21,6 +21,7 @@ struct RoutineRunView: View {
     @AppStorage("nextcue.reviewPromptHandled") private var reviewPromptHandled = false
     @AppStorage(NextCuePreferences.stepTimerKey) private var showsStepTimer = true
     @AppStorage(NextCuePreferences.keepAwakeKey) private var keepsScreenAwake = true
+    @ScaledMetric(relativeTo: .largeTitle) private var stepTitleSize: CGFloat = 40
 
     private var finishedCompletion: RoutineCompletion? {
         trackedRunID.flatMap { routines.completion(forRun: $0) }
@@ -55,7 +56,7 @@ struct RoutineRunView: View {
             .sheet(isPresented: $showPaywall, onDismiss: presentRoutineEditorAfterPurchase) {
                 NextCuePaywallView()
             }
-            .sheet(isPresented: $showNewRoutine) { RoutineSetupView() }
+            .sheet(isPresented: $showNewRoutine) { NewRoutineSheet() }
         }
         .tint(NextCueStyle.accent)
         .sensoryFeedback(.success, trigger: doneCount)
@@ -116,83 +117,27 @@ struct RoutineRunView: View {
     @ViewBuilder
     private func runContent(_ run: RoutineRun) -> some View {
         if let step = run.currentStep {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
-                    StepTrack(run: run)
-
-                    VStack(alignment: .leading, spacing: 18) {
-                        HStack(spacing: 8) {
-                            Text("STEP \(run.currentStepIndex + 1) OF \(run.steps.count)")
-                                .font(.caption.weight(.bold))
-                                .tracking(1.05)
-                                .foregroundStyle(NextCueStyle.accent)
-                            if run.isShortVersion {
-                                Label("Short version", systemImage: "leaf")
-                                    .font(.caption.weight(.semibold))
-                                    .foregroundStyle(NextCueStyle.secondary)
-                            }
-                            Spacer()
-                        }
-
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text(step.name)
-                                .font(.system(.largeTitle, design: .rounded).weight(.heavy))
-                                .foregroundStyle(NextCueStyle.ink)
-                                .fixedSize(horizontal: false, vertical: true)
-                                .accessibilityAddTraits(.isHeader)
-                            if let details = step.details,
-                               !details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                                Text(details)
-                                    .font(.title3)
-                                    .foregroundStyle(NextCueStyle.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                            }
-                        }
-                        .id(step.id)
-                        .transition(stepTransition)
-
-                        if showsStepTimer {
-                            StepTimer(run: run, estimateMinutes: step.estimateMinutes)
-                        } else {
-                            Label("About \(NextCueFormat.minutes(step.estimateMinutes))", systemImage: "clock")
-                                .font(.subheadline.weight(.medium))
-                                .foregroundStyle(NextCueStyle.secondary)
-                        }
+            GeometryReader { proxy in
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        runHeader(run)
+                        Spacer(minLength: 32)
+                        stepFocus(run: run, step: step)
+                        Spacer(minLength: 32)
+                        nextUp(run)
                     }
-                    .padding(23)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(NextCueStyle.surface, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 26, style: .continuous)
-                            .strokeBorder(NextCueStyle.line.opacity(0.7), lineWidth: 1)
-                    }
-
-                    HStack(spacing: 8) {
-                        Image(systemName: run.nextStep == nil ? "flag.checkered" : "arrow.turn.down.right")
-                            .accessibilityHidden(true)
-                        Text(run.nextStep.map { "Next: \($0.name)" } ?? "Last step. Almost there.")
-                            .lineLimit(2)
-                    }
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(NextCueStyle.secondary)
-                    .padding(.horizontal, 4)
-
-                    if run.isPaused {
-                        Label("Paused. Your place is saved.", systemImage: "pause.circle")
-                            .font(.subheadline.weight(.medium))
-                            .foregroundStyle(NextCueStyle.secondary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
+                    .padding(.horizontal, 22)
+                    .padding(.top, 6)
+                    .padding(.bottom, 14)
+                    .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .top)
                 }
-                .padding(.horizontal, 18)
-                .padding(.top, 8)
-                .padding(.bottom, 20)
+                .scrollBounceBehavior(.basedOnSize)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) { controls(run) }
             .overlay(alignment: .bottom) {
                 if let toast {
                     ToastView(toast: toast) { perform(.back) }
-                        .padding(.bottom, run.isPaused ? 104 : 168)
+                        .padding(.bottom, run.isPaused ? 96 : 150)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
@@ -208,20 +153,111 @@ struct RoutineRunView: View {
         }
     }
 
+    private func runHeader(_ run: RoutineRun) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            StepTrack(run: run)
+            HStack(spacing: 8) {
+                Text("STEP \(run.currentStepIndex + 1) OF \(run.steps.count)")
+                    .font(.caption.weight(.bold))
+                    .tracking(1.05)
+                    .foregroundStyle(NextCueStyle.accent)
+                    .contentTransition(.numericText())
+                if run.isShortVersion {
+                    Label("Short version", systemImage: "leaf")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(NextCueStyle.secondary)
+                }
+                Spacer()
+                Text("about \(NextCueFormat.minutes(RoutineEngine.remainingMinutes(for: run))) left")
+                    .font(.caption.weight(.medium).monospacedDigit())
+                    .foregroundStyle(NextCueStyle.secondary)
+                    .contentTransition(.numericText())
+            }
+        }
+    }
+
+    private func stepFocus(run: RoutineRun, step: RoutineStep) -> some View {
+        VStack(alignment: .leading, spacing: 22) {
+            if run.isPaused {
+                Label("Paused. Your place is saved.", systemImage: "pause.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(NextCueStyle.warm)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(NextCueStyle.warmWash, in: Capsule())
+                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
+            }
+            VStack(alignment: .leading, spacing: 12) {
+                Text(step.name)
+                    .font(.system(size: stepTitleSize, weight: .heavy, design: .rounded))
+                    .foregroundStyle(NextCueStyle.ink)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityAddTraits(.isHeader)
+                if let details = step.details,
+                   !details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(details)
+                        .font(.title3)
+                        .foregroundStyle(NextCueStyle.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .id(step.id)
+            .transition(stepTransition)
+
+            if showsStepTimer {
+                StepTimer(run: run, estimateMinutes: step.estimateMinutes)
+            } else {
+                Label("About \(NextCueFormat.minutes(step.estimateMinutes))", systemImage: "clock")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(NextCueStyle.secondary)
+            }
+        }
+        .opacity(run.isPaused ? 0.55 : 1)
+        .animation(.snappy, value: run.isPaused)
+    }
+
+    private func nextUp(_ run: RoutineRun) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: run.nextStep == nil ? "flag.checkered" : "arrow.turn.down.right")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(NextCueStyle.accent)
+                .frame(width: 32, height: 32)
+                .background(NextCueStyle.accentWash, in: Circle())
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(run.nextStep == nil ? "Last step" : "Then")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(NextCueStyle.secondary)
+                Text(run.nextStep?.name ?? "Almost there.")
+                    .font(.system(.subheadline, design: .rounded).weight(.semibold))
+                    .foregroundStyle(NextCueStyle.ink)
+                    .lineLimit(2)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(12)
+        .background(NextCueStyle.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(NextCueStyle.line.opacity(0.7), lineWidth: 1)
+        }
+        .accessibilityElement(children: .combine)
+    }
+
     private func controls(_ run: RoutineRun) -> some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 4) {
             if run.isPaused {
                 Button {
-                    if !routines.resumeRun() { showRoutineError = true }
+                    withAnimation(.snappy) { if !routines.resumeRun() { showRoutineError = true } }
                 } label: {
                     Label("Resume", systemImage: "play.fill")
                 }
-                .buttonStyle(NextCuePrimaryButtonStyle())
+                .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
             } else {
                 Button { perform(.done) } label: {
                     Label(run.nextStep == nil ? "Done, finish routine" : "Done", systemImage: "checkmark")
                 }
-                .buttonStyle(NextCuePrimaryButtonStyle())
+                .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
                 .accessibilityIdentifier("run.done")
 
                 HStack(spacing: 0) {
@@ -229,23 +265,26 @@ struct RoutineRunView: View {
                         Button { perform(.later) } label: {
                             Label("Do it later", systemImage: "arrow.uturn.down")
                                 .frame(maxWidth: .infinity, minHeight: 48)
+                                .contentShape(Rectangle())
                         }
                         .accessibilityHint("Moves this step to the end of the routine")
                     }
                     Button { perform(.skip) } label: {
                         Label("Skip", systemImage: "forward")
                             .frame(maxWidth: .infinity, minHeight: 48)
+                            .contentShape(Rectangle())
                     }
                     .accessibilityLabel("Skip this step")
                     .accessibilityHint("Moves on without marking this step done")
                 }
+                .buttonStyle(.plain)
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(NextCueStyle.secondary)
             }
         }
         .padding(.horizontal, 18)
         .padding(.top, 10)
-        .padding(.bottom, 6)
+        .padding(.bottom, 4)
         .background(NextCueStyle.background)
     }
 
@@ -262,9 +301,10 @@ struct RoutineRunView: View {
 
     private func finishedView(_ completion: RoutineCompletion) -> some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+            VStack(spacing: 22) {
                 FinishMark()
-                VStack(alignment: .leading, spacing: 6) {
+                    .padding(.top, 36)
+                VStack(spacing: 8) {
                     Text(completion.isComplete ? "That’s a wrap." : "Nice going.")
                         .font(.system(.largeTitle, design: .rounded).weight(.heavy))
                         .foregroundStyle(NextCueStyle.ink)
@@ -273,6 +313,7 @@ struct RoutineRunView: View {
                         .foregroundStyle(NextCueStyle.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                .multilineTextAlignment(.center)
 
                 HStack(spacing: 10) {
                     StatTile(value: "\(completion.completedSteps) of \(completion.totalSteps)", label: "steps done")
@@ -280,13 +321,24 @@ struct RoutineRunView: View {
                     StatTile(value: NextCueFormat.time(completion.completedAt), label: "finished")
                 }
 
-                Button("Done") { dismiss() }
-                    .buttonStyle(NextCuePrimaryButtonStyle())
-                    .padding(.top, 6)
+                if let next = laterToday(after: completion) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "clock")
+                            .foregroundStyle(NextCueStyle.accent)
+                            .accessibilityHidden(true)
+                        Text("Later today: **\(next.name)** at \(NextCueFormat.time(hour: next.schedule.hour, minute: next.schedule.minute))")
+                            .foregroundStyle(NextCueStyle.ink)
+                        Spacer(minLength: 0)
+                    }
+                    .font(.subheadline)
+                    .padding(14)
+                    .background(NextCueStyle.accentWash.opacity(0.6), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .accessibilityElement(children: .combine)
+                }
 
                 if routines.canUndoFinish(completion) {
                     Button {
-                        withAnimation { _ = routines.undoFinish() }
+                        withAnimation(.snappy) { _ = routines.undoFinish() }
                     } label: {
                         Label("Not quite done? Undo the last step", systemImage: "arrow.uturn.backward")
                             .font(.subheadline.weight(.semibold))
@@ -319,8 +371,18 @@ struct RoutineRunView: View {
                     reviewPrompt
                 }
             }
-            .padding(24)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 22)
+            .padding(.bottom, 20)
+            .frame(maxWidth: .infinity)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            Button("Done") { dismiss() }
+                .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
+                .padding(.horizontal, 18)
+                .padding(.top, 10)
+                .padding(.bottom, 4)
+                .background(NextCueStyle.background)
         }
     }
 
@@ -335,8 +397,21 @@ struct RoutineRunView: View {
     }
 
     private func durationLabel(_ seconds: TimeInterval) -> String {
-        let minutes = Int((seconds / 60).rounded())
-        return minutes < 1 ? "<1 min" : NextCueFormat.minutes(minutes)
+        guard seconds >= 60 else { return "\(max(1, Int(seconds))) sec" }
+        return NextCueFormat.minutes(Int((seconds / 60).rounded()))
+    }
+
+    /// The next scheduled routine still to come today, so finishing one points to the next.
+    private func laterToday(after completion: RoutineCompletion) -> Routine? {
+        let unlocked = routines.routines.filter {
+            !NextCueRoutineAccess.requiresPro(routineID: $0.id, routines: routines.routines, isPro: purchases.isPro)
+        }
+        let now = Date.now
+        let nowMinute = Calendar.current.component(.hour, from: now) * 60 + Calendar.current.component(.minute, from: now)
+        return TodayPlan(routines: unlocked, completions: routines.completions, now: now).routines.first {
+            $0.id != completion.routineID && $0.isScheduled && $0.schedule.minuteOfDay > nowMinute
+                && !routines.completedToday(for: $0.id)
+        }
     }
 
     private var unavailableView: some View {
@@ -584,16 +659,25 @@ private struct FinishMark: View {
     @State private var shown = false
 
     var body: some View {
-        Image(systemName: "checkmark")
-            .font(.system(size: 30, weight: .bold))
-            .foregroundStyle(NextCueStyle.onAccent)
-            .frame(width: 68, height: 68)
-            .background(NextCueStyle.success, in: Circle())
-            .scaleEffect(shown || reduceMotion ? 1 : 0.4)
-            .opacity(shown || reduceMotion ? 1 : 0)
-            .onAppear {
-                withAnimation(.spring(response: 0.45, dampingFraction: 0.6)) { shown = true }
-            }
-            .accessibilityHidden(true)
+        ZStack {
+            Circle()
+                .stroke(NextCueStyle.success.opacity(0.25), lineWidth: 2)
+                .frame(width: 120, height: 120)
+                .scaleEffect(shown && !reduceMotion ? 1.12 : 0.8)
+                .opacity(shown && !reduceMotion ? 0 : 1)
+            Circle()
+                .fill(NextCueStyle.success)
+                .frame(width: 88, height: 88)
+            Image(systemName: "checkmark")
+                .font(.system(size: 38, weight: .bold))
+                .foregroundStyle(NextCueStyle.onAccent)
+                .symbolEffect(.bounce, value: shown)
+        }
+        .scaleEffect(shown || reduceMotion ? 1 : 0.4)
+        .opacity(shown || reduceMotion ? 1 : 0)
+        .onAppear {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.62)) { shown = true }
+        }
+        .accessibilityHidden(true)
     }
 }

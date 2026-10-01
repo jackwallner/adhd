@@ -35,10 +35,6 @@ enum NextCueDebugLaunch {
         screen == "run" || screen == "paused" || screen == "complete"
     }
 
-    static var startsOnRoutinesTab: Bool {
-        screen == "routines" || screen == "editor"
-    }
-
     static var needsPreparation: Bool {
         #if DEBUG
         hasArgument("-SeedScreenshotData") || screen != "home"

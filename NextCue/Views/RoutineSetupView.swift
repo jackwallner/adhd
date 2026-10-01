@@ -8,38 +8,87 @@ struct RoutineSetupView: View {
     @Environment(\.openURL) private var openURL
 
     private let routine: Routine?
+    private let onClose: (() -> Void)?
+    private let showsCancel: Bool
+    private let initialDraft: RoutineDraft
 
     @State private var name: String
     @State private var steps: [RoutineSetupStep]
     @State private var reminderEnabled: Bool
     @State private var reminderTime: Date
     @State private var weekdays: Set<Int>
-    @State private var selectedTemplate: RoutineStarterTemplate?
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var showSaveError = false
     @State private var showDeleteConfirmation = false
+    @State private var showDiscardConfirmation = false
     @State private var isSaving = false
     @State private var savedCount = 0
-    @FocusState private var focusedStep: UUID?
+    @FocusState private var focus: SetupField?
 
-    init(routine: Routine? = nil) {
-        let debugTemplate = routine == nil && NextCueDebugLaunch.screen == "editor"
-            ? RoutineStarterTemplate.morning
-            : nil
-        self.routine = routine
-        _name = State(initialValue: routine?.name ?? debugTemplate?.title ?? "")
-        _steps = State(initialValue: routine?.steps.map(RoutineSetupStep.init(step:))
-            ?? debugTemplate?.setupSteps
-            ?? [])
-        _reminderEnabled = State(initialValue: routine?.reminderEnabled ?? debugTemplate?.hasReminder ?? false)
-        _weekdays = State(initialValue: routine?.schedule.weekdays ?? Set(debugTemplate?.weekdays ?? [2, 3, 4, 5, 6]))
-
-        let hour = routine?.schedule.hour ?? debugTemplate?.hour ?? 8
-        let minute = routine?.schedule.minute ?? debugTemplate?.minute ?? 0
-        let date = Calendar.current.date(bySettingHour: hour, minute: minute, second: 0, of: .now) ?? .now
-        _reminderTime = State(initialValue: date)
-        _selectedTemplate = State(initialValue: debugTemplate)
+    init(routine: Routine) {
+        self.init(
+            routine: routine,
+            name: routine.name,
+            steps: routine.steps.map(RoutineSetupStep.init(step:)),
+            reminderEnabled: routine.reminderEnabled,
+            hour: routine.schedule.hour,
+            minute: routine.schedule.minute,
+            weekdays: routine.schedule.weekdays.isEmpty ? [2, 3, 4, 5, 6] : routine.schedule.weekdays,
+            showsCancel: true,
+            onClose: nil
+        )
     }
+
+    init(template: RoutineStarterTemplate, showsCancel: Bool = true, onClose: (() -> Void)? = nil) {
+        self.init(
+            routine: nil,
+            name: template.routineName,
+            steps: template.setupSteps,
+            reminderEnabled: template.hasReminder,
+            hour: template.hour,
+            minute: template.minute,
+            weekdays: Set(template.weekdays),
+            showsCancel: showsCancel,
+            onClose: onClose
+        )
+    }
+
+    private init(
+        routine: Routine?,
+        name: String,
+        steps: [RoutineSetupStep],
+        reminderEnabled: Bool,
+        hour: Int,
+        minute: Int,
+        weekdays: Set<Int>,
+        showsCancel: Bool,
+        onClose: (() -> Void)?
+    ) {
+        self.routine = routine
+        self.onClose = onClose
+        self.showsCancel = showsCancel
+        let time = Calendar.current.date(bySettingHour: hour, minute: minute, second: 0, of: .now) ?? .now
+        initialDraft = RoutineDraft(name: name, steps: steps, reminderEnabled: reminderEnabled, hour: hour, minute: minute, weekdays: weekdays)
+        _name = State(initialValue: name)
+        _steps = State(initialValue: steps.isEmpty ? [RoutineSetupStep(name: "", details: "", minutes: 5)] : steps)
+        _reminderEnabled = State(initialValue: reminderEnabled)
+        _reminderTime = State(initialValue: time)
+        _weekdays = State(initialValue: weekdays)
+    }
+
+    private var draft: RoutineDraft {
+        let components = Calendar.current.dateComponents([.hour, .minute], from: reminderTime)
+        return RoutineDraft(
+            name: name,
+            steps: steps,
+            reminderEnabled: reminderEnabled,
+            hour: components.hour ?? 8,
+            minute: components.minute ?? 0,
+            weekdays: weekdays
+        )
+    }
+
+    private var hasChanges: Bool { draft != initialDraft }
 
     private var canSave: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
@@ -52,332 +101,236 @@ struct RoutineSetupView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    if routine == nil { templateSection }
-                    nameSection
-                    stepsSection
-                    reminderSection
-                    if routine != nil { deleteRoutineAction }
-                    Text("Next Cue supports routine planning. It does not diagnose or treat ADHD or any health condition.")
-                        .font(.footnote)
-                        .foregroundStyle(NextCueStyle.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .padding(.horizontal, 2)
-                }
-                .padding(.horizontal, 18)
-                .padding(.top, 16)
-                .padding(.bottom, 28)
-            }
-            .scrollDismissesKeyboard(.interactively)
-            .background(NextCueStyle.background.ignoresSafeArea())
-            .navigationTitle(routine == nil ? "New routine" : "Edit routine")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
-                }
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Done") { focusedStep = nil; hideKeyboard() }
-                }
-            }
-            .safeAreaInset(edge: .bottom, spacing: 0) {
-                Button(routine == nil ? "Save routine" : "Save changes") {
-                    Task { await save() }
-                }
-                .buttonStyle(NextCuePrimaryButtonStyle())
-                .disabled(!canSave || isSaving)
-                .opacity(canSave ? 1 : 0.55)
-                .padding(.horizontal, 18)
-                .padding(.top, 10)
-                .padding(.bottom, 8)
-                .background(NextCueStyle.background)
-            }
-            .task { await refreshNotificationStatus() }
-            .sensoryFeedback(.success, trigger: savedCount)
-            .alert("Couldn’t update routine", isPresented: $showSaveError) {
-                Button("OK", role: .cancel) { }
-            } message: {
-                Text(routines.persistenceError ?? "Please try again.")
-            }
-            .confirmationDialog("Delete this routine?", isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
-                Button("Delete routine", role: .destructive, action: deleteRoutine)
-                Button("Keep routine", role: .cancel) { }
-            } message: {
-                Text("This also removes its schedule. You can create another routine later.")
+        List {
+            nameSection
+            stepsSection
+            reminderSection
+            if routine != nil { deleteSection }
+            Section {} footer: {
+                Text("Next Cue supports routine planning. It does not diagnose or treat ADHD or any health condition.")
             }
         }
-        .tint(NextCueStyle.accent)
+        .listStyle(.insetGrouped)
+        .listSectionSpacing(22)
+        .scrollContentBackground(.hidden)
+        .scrollDismissesKeyboard(.interactively)
+        .background(NextCueStyle.background.ignoresSafeArea())
+        .navigationTitle(routine == nil ? "New routine" : "Edit routine")
+        .navigationBarTitleDisplayMode(.inline)
+        .interactiveDismissDisabled(hasChanges)
+        .toolbar { toolbar }
+        .task {
+            await refreshNotificationStatus()
+            if routine == nil && name.isEmpty {
+                try? await Task.sleep(for: .milliseconds(450))
+                focus = .name
+            }
+        }
+        .sensoryFeedback(.success, trigger: savedCount)
+        .alert("Couldn’t update routine", isPresented: $showSaveError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(routines.persistenceError ?? "Please try again.")
+        }
+        .confirmationDialog("Delete this routine?", isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
+            Button("Delete routine", role: .destructive, action: deleteRoutine)
+            Button("Keep routine", role: .cancel) { }
+        } message: {
+            Text("This also removes its reminder.")
+        }
+        .confirmationDialog("Discard your changes?", isPresented: $showDiscardConfirmation, titleVisibility: .visible) {
+            Button("Discard changes", role: .destructive, action: close)
+            Button("Keep editing", role: .cancel) { }
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var toolbar: some ToolbarContent {
+        if showsCancel {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Cancel") {
+                    if hasChanges { showDiscardConfirmation = true } else { close() }
+                }
+            }
+        }
+        ToolbarItem(placement: .confirmationAction) {
+            Button(routine == nil ? "Save" : "Done") {
+                Task { await save() }
+            }
+            .fontWeight(.semibold)
+            .disabled(!canSave || isSaving)
+            .accessibilityIdentifier("setup.save")
+        }
+        ToolbarItemGroup(placement: .keyboard) {
+            Spacer()
+            Button("Done") { focus = nil }
+                .fontWeight(.semibold)
+        }
     }
 
     // MARK: Sections
 
-    private var templateSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            VStack(alignment: .leading, spacing: 5) {
-                Text("Choose a starting point")
-                    .font(.system(.title2, design: .rounded).weight(.bold))
-                    .foregroundStyle(NextCueStyle.ink)
-                Text("Use a template as-is or make it yours.")
-                    .font(.subheadline)
-                    .foregroundStyle(NextCueStyle.secondary)
-            }
-
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
-                ForEach(RoutineStarterTemplate.allCases.filter { $0 != .blank }) { template in
-                    templateButton(template)
-                }
-            }
-            templateButton(.blank)
-        }
-    }
-
-    private func templateButton(_ template: RoutineStarterTemplate) -> some View {
-        let selected = selectedTemplate == template
-        return Button { apply(template) } label: {
-            VStack(alignment: .leading, spacing: 8) {
-                Image(systemName: template.symbol)
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(NextCueStyle.accent)
-                    .accessibilityHidden(true)
-                Text(template.title)
-                    .font(.system(.headline, design: .rounded).weight(.bold))
-                    .foregroundStyle(NextCueStyle.ink)
-                    .multilineTextAlignment(.leading)
-                Text(template.subtitle)
-                    .font(.caption)
-                    .foregroundStyle(NextCueStyle.secondary)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .frame(maxWidth: .infinity, minHeight: template == .blank ? nil : 112, alignment: .topLeading)
-            .padding(14)
-            .background(NextCueStyle.surface, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .strokeBorder(selected ? NextCueStyle.accent : NextCueStyle.line, lineWidth: selected ? 2 : 1)
-            }
-        }
-        .buttonStyle(.plain)
-        .accessibilityAddTraits(selected ? .isSelected : [])
-    }
-
     private var nameSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            NextCueSectionTitle(title: "Name your routine")
-            NextCueCard(padding: 14) {
-                TextField("For example, Morning start", text: $name)
-                    .font(.system(.body, design: .rounded).weight(.medium))
-                    .textInputAutocapitalization(.words)
-                    .submitLabel(.next)
-                    .onSubmit { focusedStep = steps.first?.id }
-                    .accessibilityLabel("Routine name")
-            }
+        Section {
+            TextField("For example, Morning start", text: $name)
+                .font(.system(.title3, design: .rounded).weight(.semibold))
+                .foregroundStyle(NextCueStyle.ink)
+                .textInputAutocapitalization(.words)
+                .focused($focus, equals: .name)
+                .submitLabel(.next)
+                .onSubmit { focus = steps.first.map { .step($0.id) } }
+                .accessibilityLabel("Routine name")
+                .listRowBackground(NextCueStyle.surface)
+        } header: {
+            Text("Name")
         }
     }
 
     private var stepsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            NextCueSectionTitle(
-                title: "Your steps",
-                trailing: steps.isEmpty ? nil : "about \(NextCueFormat.minutes(totalMinutes))"
-            )
+        Section {
             ForEach($steps) { $step in
-                let index = steps.firstIndex { $0.id == step.id } ?? 0
-                StepEditorCard(
+                StepRow(
                     step: $step,
-                    number: index + 1,
-                    canMoveUp: index > 0,
-                    canMoveDown: index < steps.count - 1,
-                    canRemove: steps.count > 1,
-                    focusedStep: $focusedStep,
-                    onSubmit: { addStep(after: step.id) },
-                    move: { offset in move(step.id, by: offset) },
-                    remove: { removeStep(id: step.id) }
+                    number: (steps.firstIndex { $0.id == step.id } ?? 0) + 1,
+                    focus: $focus,
+                    onSubmit: { addStep(after: step.id) }
                 )
-                .dropDestination(for: String.self) { items, _ in
-                    guard let raw = items.first, let dragged = UUID(uuidString: raw) else { return false }
-                    return drop(dragged, onto: step.id)
-                }
+                .listRowBackground(NextCueStyle.surface)
+                .deleteDisabled(steps.count == 1)
+            }
+            .onMove { from, to in
+                withAnimation(.snappy) { steps.move(fromOffsets: from, toOffset: to) }
+            }
+            .onDelete { offsets in
+                guard steps.count > offsets.count else { return }
+                withAnimation(.snappy) { steps.remove(atOffsets: offsets) }
             }
 
             Button {
                 addStep(after: steps.last?.id)
             } label: {
                 Label("Add a step", systemImage: "plus.circle.fill")
-                    .font(.subheadline.weight(.semibold))
+                    .font(.body.weight(.semibold))
                     .foregroundStyle(NextCueStyle.accent)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 5)
             }
-
-            Text("Tip: mark steps optional to get a short version for low-energy days. Hold the handle to reorder.")
-                .font(.footnote)
-                .foregroundStyle(NextCueStyle.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+            .listRowBackground(NextCueStyle.surface)
+        } header: {
+            HStack {
+                Text("Steps")
+                Spacer()
+                if totalMinutes > 0 {
+                    Text("about \(NextCueFormat.minutes(totalMinutes))")
+                        .textCase(nil)
+                        .monospacedDigit()
+                }
+            }
+        } footer: {
+            Text("Tap Optional to leave a step out of the short version for low-energy days. Hold a step to drag it, or swipe left to delete.")
         }
     }
 
     private var reminderSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            NextCueSectionTitle(title: "Reminder")
-            NextCueCard {
-                VStack(alignment: .leading, spacing: 16) {
-                    Toggle(isOn: $reminderEnabled.animation()) {
-                        VStack(alignment: .leading, spacing: 3) {
-                            Text("Remind me on a schedule")
-                                .font(.system(.headline, design: .rounded).weight(.semibold))
-                                .foregroundStyle(NextCueStyle.ink)
-                            Text("You can start this routine any time.")
-                                .font(.footnote)
-                                .foregroundStyle(NextCueStyle.secondary)
-                        }
-                    }
-                    .tint(NextCueStyle.accent)
-
-                    if reminderEnabled {
-                        DatePicker("Reminder time", selection: $reminderTime, displayedComponents: .hourAndMinute)
-                            .font(.subheadline.weight(.medium))
-                            .accessibilityHint("Choose when this routine should appear in your day")
-
-                        HStack(spacing: 7) {
-                            ForEach(NextCueWeekday.ordered) { day in
-                                let selected = weekdays.contains(day.rawValue)
-                                Button {
-                                    toggle(day)
-                                } label: {
-                                    Text(day.shortName)
-                                        .font(.system(.subheadline, design: .rounded).weight(.bold))
-                                        .foregroundStyle(selected ? NextCueStyle.onAccent : NextCueStyle.ink)
-                                        .frame(maxWidth: .infinity, minHeight: 42)
-                                        .background(selected ? NextCueStyle.accent : NextCueStyle.background, in: Circle())
-                                }
-                                .buttonStyle(.plain)
-                                .accessibilityLabel(day.fullName)
-                                .accessibilityAddTraits(selected ? .isSelected : [])
-                            }
-                        }
-
-                        reminderPermission
-                    }
+        Section {
+            Toggle(isOn: $reminderEnabled.animation(.snappy)) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Remind me")
+                        .foregroundStyle(NextCueStyle.ink)
+                    Text("It also sets when this routine shows up on Today.")
+                        .font(.footnote)
+                        .foregroundStyle(NextCueStyle.secondary)
                 }
             }
+            .tint(NextCueStyle.accent)
+            .listRowBackground(NextCueStyle.surface)
+
+            if reminderEnabled {
+                DatePicker("Time", selection: $reminderTime, displayedComponents: .hourAndMinute)
+                    .foregroundStyle(NextCueStyle.ink)
+                    .listRowBackground(NextCueStyle.surface)
+                    .accessibilityLabel("Reminder time")
+
+                WeekdayPicker(weekdays: $weekdays)
+                    .listRowBackground(NextCueStyle.surface)
+            }
+        } header: {
+            Text("Reminder")
+        } footer: {
+            if reminderEnabled { reminderFooter }
         }
     }
 
-    private var deleteRoutineAction: some View {
-        Button(role: .destructive) {
-            showDeleteConfirmation = true
-        } label: {
-            Label("Delete routine", systemImage: "trash")
-                .font(.subheadline.weight(.semibold))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 5)
+    private var deleteSection: some View {
+        Section {
+            Button(role: .destructive) {
+                showDeleteConfirmation = true
+            } label: {
+                Text("Delete routine")
+                    .frame(maxWidth: .infinity)
+            }
+            .listRowBackground(NextCueStyle.surface)
+            .accessibilityHint("Permanently removes this routine and its reminder")
         }
-        .accessibilityHint("Permanently removes this routine and its reminder")
     }
 
     @ViewBuilder
-    private var reminderPermission: some View {
-        switch notificationStatus {
-        case .authorized, .provisional, .ephemeral:
-            Label("Reminders are on", systemImage: "checkmark.circle.fill")
-                .font(.footnote.weight(.medium))
-                .foregroundStyle(NextCueStyle.success)
-        case .denied:
-            VStack(alignment: .leading, spacing: 7) {
-                Text("Notifications are off, so this reminder won’t appear. You can still start the routine anytime.")
-                    .font(.footnote)
-                    .foregroundStyle(NextCueStyle.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Button("Open notification settings") {
-                    if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
+    private var reminderFooter: some View {
+        if weekdays.isEmpty {
+            Text("Pick at least one day.")
+                .foregroundStyle(NextCueStyle.danger)
+        } else {
+            switch notificationStatus {
+            case .denied:
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Notifications are off for Next Cue, so this reminder won’t appear. The routine still shows on Today.")
+                    Button("Turn on notifications") {
+                        if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
+                    }
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(NextCueStyle.accent)
                 }
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(NextCueStyle.accent)
+            case .notDetermined:
+                Text("\(NextCueSchedule.days(weekdays)) at \(NextCueFormat.time(reminderTime)). iOS will ask to allow notifications when you save.")
+            default:
+                Text("\(NextCueSchedule.days(weekdays)) at \(NextCueFormat.time(reminderTime)).")
             }
-        default:
-            Label("iOS will ask to allow reminders when you save.", systemImage: "bell.badge")
-                .font(.footnote)
-                .foregroundStyle(NextCueStyle.secondary)
         }
     }
 
     // MARK: Actions
 
-    private func apply(_ template: RoutineStarterTemplate) {
-        withAnimation(.easeInOut(duration: 0.2)) {
-            selectedTemplate = template
-            name = template == .blank ? "" : template.title
-            steps = template.setupSteps
-            reminderEnabled = template.hasReminder
-            weekdays = Set(template.weekdays)
-            reminderTime = Calendar.current.date(bySettingHour: template.hour, minute: template.minute, second: 0, of: .now) ?? .now
-        }
-        if template == .blank { focusedStep = steps.first?.id }
-    }
-
-    private func toggle(_ day: NextCueWeekday) {
-        if weekdays.contains(day.rawValue) {
-            weekdays.remove(day.rawValue)
-        } else {
-            weekdays.insert(day.rawValue)
-        }
-    }
-
     /// Return on a step adds the next one, so a whole routine can be typed without reaching for buttons.
     private func addStep(after id: UUID?) {
         let index = id.flatMap { id in steps.firstIndex { $0.id == id } }
-        if let index, index < steps.count - 1, steps[index + 1].trimmedName.isEmpty {
-            focusedStep = steps[index + 1].id
+        if let index, index < steps.count - 1 {
+            focus = .step(steps[index + 1].id)
             return
         }
         if let index, steps[index].trimmedName.isEmpty {
-            focusedStep = nil
+            focus = nil
             return
         }
         let step = RoutineSetupStep(name: "", details: "", minutes: 5)
-        withAnimation(.easeOut(duration: 0.2)) {
+        withAnimation(.snappy) {
             steps.insert(step, at: index.map { $0 + 1 } ?? steps.count)
         }
-        focusedStep = step.id
-    }
-
-    private func move(_ id: UUID, by offset: Int) {
-        guard let index = steps.firstIndex(where: { $0.id == id }) else { return }
-        let target = index + offset
-        guard steps.indices.contains(target) else { return }
-        withAnimation(.easeInOut(duration: 0.2)) { steps.swapAt(index, target) }
-    }
-
-    private func drop(_ dragged: UUID, onto target: UUID) -> Bool {
-        guard dragged != target,
-              let from = steps.firstIndex(where: { $0.id == dragged }),
-              let to = steps.firstIndex(where: { $0.id == target }) else { return false }
-        withAnimation(.easeInOut(duration: 0.2)) {
-            steps.move(fromOffsets: IndexSet(integer: from), toOffset: to > from ? to + 1 : to)
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(60))
+            focus = .step(step.id)
         }
-        return true
-    }
-
-    private func removeStep(id: UUID) {
-        guard steps.count > 1 else { return }
-        withAnimation(.easeOut(duration: 0.2)) { steps.removeAll { $0.id == id } }
     }
 
     private func save() async {
         isSaving = true
         defer { isSaving = false }
+        focus = nil
         if reminderEnabled && notificationStatus == .notDetermined {
             _ = await ReminderService.requestAuthorization()
             await refreshNotificationStatus()
         }
-        let components = Calendar.current.dateComponents([.hour, .minute], from: reminderTime)
+        let current = draft
         let schedule = RoutineSchedule(
-            hour: components.hour ?? 8,
-            minute: components.minute ?? 0,
+            hour: current.hour,
+            minute: current.minute,
             weekdays: reminderEnabled ? weekdays : []
         )
         let savedRoutine = Routine(
@@ -393,7 +346,7 @@ struct RoutineSetupView: View {
             return
         }
         savedCount += 1
-        dismiss()
+        close()
     }
 
     private func deleteRoutine() {
@@ -401,11 +354,11 @@ struct RoutineSetupView: View {
             showSaveError = true
             return
         }
-        dismiss()
+        close()
     }
 
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    private func close() {
+        if let onClose { onClose() } else { dismiss() }
     }
 
     @MainActor
@@ -414,111 +367,152 @@ struct RoutineSetupView: View {
     }
 }
 
-private struct StepEditorCard: View {
+private enum SetupField: Hashable {
+    case name
+    case step(UUID)
+    case note(UUID)
+}
+
+private struct RoutineDraft: Equatable {
+    var name: String
+    var steps: [RoutineSetupStep]
+    var reminderEnabled: Bool
+    var hour: Int
+    var minute: Int
+    var weekdays: Set<Int>
+}
+
+private struct StepRow: View {
     @Binding var step: RoutineSetupStep
     let number: Int
-    let canMoveUp: Bool
-    let canMoveDown: Bool
-    let canRemove: Bool
-    var focusedStep: FocusState<UUID?>.Binding
+    var focus: FocusState<SetupField?>.Binding
     let onSubmit: () -> Void
-    let move: (Int) -> Void
-    let remove: () -> Void
 
     var body: some View {
-        NextCueCard(padding: 14) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .center, spacing: 10) {
-                    Text("\(number)")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(NextCueStyle.accent)
-                        .frame(width: 26, height: 26)
-                        .background(NextCueStyle.accentWash, in: Circle())
-                        .accessibilityHidden(true)
-                    TextField("Step name", text: $step.name)
-                        .font(.system(.body, design: .rounded).weight(.semibold))
-                        .focused(focusedStep, equals: step.id)
-                        .submitLabel(.next)
-                        .onSubmit(onSubmit)
-                        .accessibilityLabel("Step \(number) name")
-                    Menu {
-                        Button { move(-1) } label: { Label("Move up", systemImage: "arrow.up") }
-                            .disabled(!canMoveUp)
-                        Button { move(1) } label: { Label("Move down", systemImage: "arrow.down") }
-                            .disabled(!canMoveDown)
-                        Button { step.isOptional.toggle() } label: {
-                            Label(step.isOptional ? "Keep in short version" : "Leave out of short version", systemImage: "leaf")
-                        }
-                        Button(role: .destructive, action: remove) { Label("Remove step", systemImage: "trash") }
-                            .disabled(!canRemove)
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .font(.title3)
-                            .foregroundStyle(NextCueStyle.secondary)
-                            .frame(width: 32, height: 32)
-                    }
-                    .accessibilityLabel("Step \(number) options")
-                    Image(systemName: "line.3.horizontal")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(NextCueStyle.secondary.opacity(0.7))
-                        .frame(width: 28, height: 32)
-                        .contentShape(Rectangle())
-                        .draggable(step.id.uuidString) {
-                            Text(step.name.isEmpty ? "Step \(number)" : step.name)
-                                .font(.system(.body, design: .rounded).weight(.semibold))
-                                .padding(12)
-                                .background(NextCueStyle.surface, in: RoundedRectangle(cornerRadius: 12))
-                        }
-                        .accessibilityHidden(true)
-                }
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text("\(number)")
+                .font(.system(.footnote, design: .rounded).weight(.bold).monospacedDigit())
+                .foregroundStyle(NextCueStyle.accent)
+                .frame(width: 26, height: 26)
+                .background(NextCueStyle.accentWash, in: Circle())
+                .alignmentGuide(.firstTextBaseline) { $0[VerticalAlignment.center] + 5 }
+                .accessibilityHidden(true)
 
-                TextField("A short note, if helpful", text: $step.details, axis: .vertical)
+            VStack(alignment: .leading, spacing: 6) {
+                TextField("What’s the step?", text: $step.name)
+                    .font(.system(.body, design: .rounded).weight(.semibold))
+                    .foregroundStyle(NextCueStyle.ink)
+                    .focused(focus, equals: .step(step.id))
+                    .submitLabel(.next)
+                    .onSubmit(onSubmit)
+                    .accessibilityLabel("Step \(number) name")
+                TextField("Add a note", text: $step.details)
                     .font(.subheadline)
-                    .lineLimit(1...3)
                     .foregroundStyle(NextCueStyle.secondary)
-                    .padding(.leading, 36)
+                    .focused(focus, equals: .note(step.id))
+                    .submitLabel(.next)
+                    .onSubmit(onSubmit)
                     .accessibilityLabel("Step \(number) note, optional")
-
-                HStack(spacing: 7) {
-                    Image(systemName: "clock")
-                        .accessibilityHidden(true)
-                    Stepper(value: $step.minutes, in: 1...90, step: 1) {
-                        Text("\(step.minutes) min")
-                            .monospacedDigit()
-                            .lineLimit(1)
-                    }
-                    .fixedSize()
-                    .accessibilityLabel("Estimated time")
-                    .accessibilityValue("\(step.minutes) minutes")
-                    Spacer(minLength: 4)
-                    Button {
-                        withAnimation(.easeOut(duration: 0.15)) { step.isOptional.toggle() }
-                    } label: {
-                        Label("Optional", systemImage: step.isOptional ? "leaf.fill" : "leaf")
-                            .font(.caption.weight(.semibold))
-                            .lineLimit(1)
-                            .fixedSize()
-                            .foregroundStyle(step.isOptional ? NextCueStyle.onAccent : NextCueStyle.secondary)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(step.isOptional ? NextCueStyle.accent : NextCueStyle.background, in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Optional step")
-                    .accessibilityValue(step.isOptional ? "On, left out of the short version" : "Off")
-                    .accessibilityAddTraits(step.isOptional ? .isSelected : [])
+                HStack(spacing: 8) {
+                    MinutesMenu(minutes: $step.minutes)
+                    OptionalChip(isOptional: $step.isOptional)
                 }
-                .font(.caption.weight(.medium))
-                .foregroundStyle(NextCueStyle.secondary)
-                .padding(.leading, 36)
+                .padding(.top, 2)
             }
         }
-        .accessibilityAction(named: "Move up") { if canMoveUp { move(-1) } }
-        .accessibilityAction(named: "Move down") { if canMoveDown { move(1) } }
+        .padding(.vertical, 6)
     }
 }
 
-private struct RoutineSetupStep: Identifiable {
+private struct MinutesMenu: View {
+    @Binding var minutes: Int
+
+    private var options: [Int] {
+        Array(Set([1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 45, 60, 90, minutes])).sorted()
+    }
+
+    var body: some View {
+        Menu {
+            Picker("About how long?", selection: $minutes) {
+                ForEach(options, id: \.self) { Text(NextCueFormat.minutes($0)).tag($0) }
+            }
+        } label: {
+            ChipLabel(title: NextCueFormat.minutes(minutes), symbol: "clock", isOn: false)
+        }
+        .buttonStyle(.borderless)
+        .accessibilityLabel("Estimated time")
+        .accessibilityValue(NextCueFormat.minutes(minutes))
+    }
+}
+
+private struct OptionalChip: View {
+    @Binding var isOptional: Bool
+
+    var body: some View {
+        Button {
+            withAnimation(.snappy(duration: 0.2)) { isOptional.toggle() }
+        } label: {
+            ChipLabel(title: "Optional", symbol: isOptional ? "leaf.fill" : "leaf", isOn: isOptional)
+        }
+        .buttonStyle(.borderless)
+        .sensoryFeedback(.selection, trigger: isOptional)
+        .accessibilityLabel("Optional step")
+        .accessibilityValue(isOptional ? "On, left out of the short version" : "Off")
+        .accessibilityAddTraits(isOptional ? .isSelected : [])
+    }
+}
+
+/// Built from an HStack because List rows render a plain Label as an icon only.
+private struct ChipLabel: View {
+    let title: String
+    let symbol: String
+    let isOn: Bool
+
+    var body: some View {
+        HStack(spacing: 5) {
+            Image(systemName: symbol)
+                .imageScale(.small)
+            Text(title)
+        }
+        .font(.caption.weight(.semibold).monospacedDigit())
+        .lineLimit(1)
+        .fixedSize()
+        .foregroundStyle(isOn ? NextCueStyle.onAccent : NextCueStyle.secondary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(isOn ? NextCueStyle.accent : NextCueStyle.background, in: Capsule())
+    }
+}
+
+private struct WeekdayPicker: View {
+    @Binding var weekdays: Set<Int>
+
+    var body: some View {
+        HStack(spacing: 6) {
+            ForEach(NextCueWeekday.ordered) { day in
+                let selected = weekdays.contains(day.rawValue)
+                Button {
+                    withAnimation(.snappy(duration: 0.18)) {
+                        if selected { weekdays.remove(day.rawValue) } else { weekdays.insert(day.rawValue) }
+                    }
+                } label: {
+                    Text(day.shortName)
+                        .font(.system(.subheadline, design: .rounded).weight(.bold))
+                        .foregroundStyle(selected ? NextCueStyle.onAccent : NextCueStyle.ink)
+                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .background(selected ? NextCueStyle.accent : NextCueStyle.background, in: Circle())
+                }
+                .buttonStyle(.borderless)
+                .accessibilityLabel(day.fullName)
+                .accessibilityAddTraits(selected ? .isSelected : [])
+            }
+        }
+        .padding(.vertical, 4)
+        .sensoryFeedback(.selection, trigger: weekdays)
+    }
+}
+
+struct RoutineSetupStep: Identifiable, Equatable {
     let id: UUID
     var name: String
     var details: String
@@ -550,97 +544,5 @@ private struct RoutineSetupStep: Identifiable {
         guard !trimmedName.isEmpty else { return nil }
         let note = details.trimmingCharacters(in: .whitespacesAndNewlines)
         return RoutineStep(id: id, name: trimmedName, details: note.isEmpty ? nil : note, estimateMinutes: minutes, isOptional: isOptional)
-    }
-}
-
-private enum RoutineStarterTemplate: String, CaseIterable, Identifiable {
-    case morning
-    case outTheDoor
-    case workStart
-    case evening
-    case blank
-
-    var id: Self { self }
-    var title: String {
-        switch self {
-        case .morning: "Morning start"
-        case .outTheDoor: "Get out the door"
-        case .workStart: "Start work"
-        case .evening: "Evening reset"
-        case .blank: "Start from scratch"
-        }
-    }
-    var subtitle: String {
-        switch self {
-        case .morning: "A gentle first few steps"
-        case .outTheDoor: "Gather what you need and go"
-        case .workStart: "Get from sitting down to started"
-        case .evening: "Make tomorrow a little easier"
-        case .blank: "Build your own, one step at a time"
-        }
-    }
-    var symbol: String {
-        switch self {
-        case .morning: "sunrise"
-        case .outTheDoor: "figure.walk.departure"
-        case .workStart: "laptopcomputer"
-        case .evening: "moon.stars"
-        case .blank: "plus"
-        }
-    }
-    var hour: Int {
-        switch self {
-        case .evening: 21
-        case .workStart: 9
-        default: 8
-        }
-    }
-    var minute: Int { self == .outTheDoor ? 30 : 0 }
-    var hasReminder: Bool { self != .blank }
-    var weekdays: [Int] { self == .evening ? [1, 2, 3, 4, 5, 6, 7] : [2, 3, 4, 5, 6] }
-
-    var setupSteps: [RoutineSetupStep] {
-        steps.map { RoutineSetupStep(name: $0.name, details: $0.details, minutes: $0.minutes, isOptional: $0.optional) }
-    }
-
-    private var steps: [(name: String, details: String, minutes: Int, optional: Bool)] {
-        switch self {
-        case .morning:
-            [
-                ("Get out of bed", "Both feet on the floor", 2, false),
-                ("Drink a glass of water", "", 1, false),
-                ("Get dressed", "", 8, false),
-                ("Make the bed", "Good enough is fine", 3, true),
-                ("Eat something", "Keep it simple", 10, false),
-                ("Gather what I need", "", 4, true),
-            ]
-        case .outTheDoor:
-            [
-                ("Get dressed", "", 8, false),
-                ("Pack my bag", "", 5, false),
-                ("Fill a water bottle", "", 2, true),
-                ("Keys, wallet, phone", "Touch each one", 2, false),
-                ("Put on shoes", "", 2, false),
-            ]
-        case .workStart:
-            [
-                ("Get a drink", "", 3, true),
-                ("Clear the desk", "Just enough space to work", 3, true),
-                ("Pick the one first task", "Write it down", 2, false),
-                ("Put my phone out of reach", "", 1, false),
-                ("Open only what that task needs", "", 2, false),
-                ("Work on it for 10 minutes", "Stopping after is allowed", 10, false),
-            ]
-        case .evening:
-            [
-                ("Put tomorrow’s clothes out", "", 4, false),
-                ("Tidy one surface", "", 5, true),
-                ("Charge my phone", "", 1, false),
-                ("Set out what I need", "", 5, true),
-                ("Brush my teeth", "", 3, false),
-            ]
-        case .blank:
-            [("", "", 5, false)]
-        }
     }
 }

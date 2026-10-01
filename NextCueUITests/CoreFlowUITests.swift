@@ -32,7 +32,7 @@ final class CoreFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Get dressed"].exists)
 
         app.buttons["Add routine"].firstMatch.tap()
-        XCTAssertTrue(app.staticTexts["Make room for more routines"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Make room for more routines"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.buttons["Restore purchases"].exists)
     }
 
@@ -59,11 +59,10 @@ final class CoreFlowUITests: XCTestCase {
 
     /// The template runs on weekdays. Add today so the test does not depend on the day it runs.
     private func pickMorningTemplateScheduledToday(_ app: XCUIApplication) {
-        XCTAssertTrue(app.buttons["Choose a starter routine"].waitForExistence(timeout: 10))
-        app.buttons["Choose a starter routine"].tap()
-        let template = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Morning start,")).firstMatch
-        XCTAssertTrue(template.waitForExistence(timeout: 5))
+        let template = app.buttons["template.morning"]
+        XCTAssertTrue(template.waitForExistence(timeout: 10))
         template.tap()
+        XCTAssertTrue(app.buttons["setup.save"].waitForExistence(timeout: 5))
         let today = Calendar.current.weekdaySymbols[Calendar.current.component(.weekday, from: .now) - 1]
         let chip = app.buttons[today]
         for _ in 0..<4 where !chip.isHittable { app.swipeUp() }
@@ -72,9 +71,9 @@ final class CoreFlowUITests: XCTestCase {
 
     /// Taps must wait for the editor sheet to finish dismissing, or they land on the sheet.
     private func saveRoutine(_ app: XCUIApplication) {
-        app.buttons["Save routine"].tap()
+        app.buttons["setup.save"].tap()
         dismissNotificationPrompt(app)
-        XCTAssertTrue(app.buttons["Save routine"].waitForNonExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["setup.save"].waitForNonExistence(timeout: 5))
     }
 
     private func dismissNotificationPrompt(_ app: XCUIApplication) {

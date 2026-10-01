@@ -6,6 +6,7 @@ import UserNotifications
 struct SettingsView: View {
     @EnvironmentObject private var routines: RoutineStore
     @EnvironmentObject private var purchases: StoreService
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
 
@@ -39,6 +40,12 @@ struct SettingsView: View {
             .background(NextCueStyle.background)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
             .sheet(isPresented: $showPaywall) { NextCuePaywallView() }
             .task { await refreshNotificationStatus() }
             .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in

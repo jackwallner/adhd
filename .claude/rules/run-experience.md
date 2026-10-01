@@ -22,6 +22,16 @@ planning, and learned step timing; do not copy those into Next Cue.
   reminders.
 - Every step action is undoable: toast Undo after Done, Skip, or Do it later;
   "Back a step" in the run menu; "Undo the last step" on the finish screen.
+- One screen. `HomeView` is the whole app shell, with no tab bar: the lead
+  card, the rest of today, then routines for other days. Settings, the
+  editor, new routines, and the paywall are sheets from Home (`HomeSheet`).
+  Tapping a row opens the routine; its play button starts it.
+- First launch is the template list on Home. Picking one opens the editor
+  already filled in; `+` opens `NewRoutineSheet`, which asks for a template
+  first. The editor is a native `List` (drag to reorder, swipe to delete) and
+  confirms before discarding edits.
+- Up next only leads with routines the user can run, so a locked Pro routine
+  never takes the hero card.
 
 ## Mechanics
 

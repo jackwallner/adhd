@@ -79,14 +79,28 @@ struct NextCueCard<Content: View>: View {
 }
 
 struct NextCuePrimaryButtonStyle: ButtonStyle {
+    var height: CGFloat = 56
+    @Environment(\.isEnabled) private var isEnabled
+
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.system(.headline, design: .rounded).weight(.bold))
             .foregroundStyle(NextCueStyle.onAccent)
-            .frame(maxWidth: .infinity, minHeight: 56)
+            .frame(maxWidth: .infinity, minHeight: height)
+            .opacity(isEnabled ? 1 : 0.6)
             .background(NextCueStyle.accent.opacity(configuration.isPressed ? 0.82 : 1), in: RoundedRectangle(cornerRadius: 17, style: .continuous))
             .scaleEffect(configuration.isPressed ? 0.985 : 1)
             .animation(.easeOut(duration: 0.14), value: configuration.isPressed)
+    }
+}
+
+/// Cards that act as buttons: a soft press instead of the default highlight.
+struct NextCuePressableStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
+            .opacity(configuration.isPressed ? 0.88 : 1)
+            .animation(.spring(response: 0.25, dampingFraction: 0.8), value: configuration.isPressed)
     }
 }
 
