@@ -26,7 +26,6 @@ schemes:
       targets:
         NextCue: all
         NextCueTests: [test]
-        NextCueUITests: [test]
     run:
       config: Debug
       storeKitConfiguration: NextCue.storekit
@@ -35,6 +34,20 @@ schemes:
       storeKitConfiguration: NextCue.storekit
       targets:
         - NextCueTests
+  # UI tests are slow, so they get their own scheme and stay out of the
+  # default `xcodebuild test -scheme NextCue` run.
+  NextCueUITests:
+    build:
+      targets:
+        NextCue: all
+        NextCueUITests: [test]
+    run:
+      config: Debug
+      storeKitConfiguration: NextCue.storekit
+    test:
+      config: Debug
+      storeKitConfiguration: NextCue.storekit
+      targets:
         - NextCueUITests
 
 targets:
