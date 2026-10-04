@@ -65,8 +65,9 @@ enum NextCueDebugLaunch {
 
         switch screen {
         case "run", "stuck":
-            if routines.activeRun == nil { _ = routines.startRun(routineID: routine.id) }
-            if routines.activeRun?.isPaused == true { _ = routines.resumeRun() }
+            // A fresh run each launch, so the step timer never shows time left over from an earlier capture.
+            if routines.activeRun != nil { _ = routines.cancelRun() }
+            _ = routines.startRun(routineID: routine.id)
         case "paused":
             if routines.activeRun == nil { _ = routines.startRun(routineID: routine.id) }
             if routines.activeRun?.isPaused == false { _ = routines.pauseRun() }
