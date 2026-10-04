@@ -1,33 +1,33 @@
-A clearer next step for the routines that shape your day.
+For the moment you know what to do and still can't start.
 
-Next Cue is a routine coach and daily planner for people who want a little more structure. Turn a big intention into small, visible steps. Start with just the first one, keep the next action in view, and get a gentle check-in if your attention wanders mid-routine.
+Next Cue breaks your routines into small steps and helps you begin the one in front of you. When a step feels too big, tap I'm stuck and it shrinks to a single tiny move: put on one sock, fill the glass, open one window. Once you've started, the whole step comes back and you keep going.
+
+WHEN YOU'RE STUCK
+• Every step can have a smallest start, a first move so small it's hard to say no to.
+• Tap I'm stuck mid-routine to see just that move. Stopping after is allowed.
+• No smallest start yet? Next Cue offers a generic one and lets you save your own for next time.
+• Drift away mid-step and one gentle check-in offers the smallest start instead of a nag.
 
 START WITH ONE SMALL STEP
-• Today leads with the routine that fits right now and names its first step.
-• See about how long a routine takes and when you'd be done if you started now.
-• Reminders name the first step, with a 10-minute snooze when now isn't the moment.
+• Today leads with the routine that fits right now and names its first step, plus an even smaller way in.
+• Reminders name that first step, with a 10-minute snooze when now isn't the moment.
+• Templates for mornings, starting work, a task you've been dreading, and evenings come with smallest starts already filled in.
 
 ONE STEP AT A TIME
 • Each step fills the screen, with what comes next shown quietly below.
 • Tapped Done too fast? Undo it. Can't do a step yet? Move it to the end.
-• An optional step timer counts up beside your estimate. It never counts down.
+• An optional step timer counts up beside your rough estimate. It never counts down.
 • The current step and a Done button stay on your Lock Screen and in the Dynamic Island.
 
 MAKE ROOM FOR REAL LIFE
 • Mark steps optional and run a short version on low-energy days. It still counts.
-• Drift away mid-step and Next Cue checks in once, gently. Mark it done from the notification.
 • Pause any time and pick up exactly where you left off.
 • No streaks, no guilt. Yesterday's unfinished run quietly clears for a fresh start.
-
-MAKE A ROUTINE
-• Start from morning, out-the-door, work-start, or evening templates, or build your own.
-• Type steps quickly, reorder them, and set a rough time for each.
-• Choose the days and time for each routine's reminder.
 
 Next Cue supports personal organization and routine planning. It does not diagnose, treat, or manage ADHD or any other medical condition. It is not medical advice or a substitute for professional care.
 
 NEXT CUE PRO
-Next Cue Pro adds unlimited routines. It is available as a monthly or yearly auto-renewing subscription, each with a one-week free trial for eligible new subscribers, or as a one-time lifetime purchase. Prices are shown in the app before you buy and vary by region.
+Your first routine is free. Next Cue Pro adds unlimited routines. It is available as a monthly or yearly auto-renewing subscription, each with a one-week free trial for eligible new subscribers, or as a one-time lifetime purchase. Prices are shown in the app before you buy and vary by region.
 
 Payment is charged to your Apple Account at confirmation of purchase. Subscriptions automatically renew unless canceled at least 24 hours before the current period ends. Your Apple Account is charged for renewal within 24 hours before the current period ends. Manage or cancel subscriptions in Apple Account Settings after purchase. Any unused portion of a free trial is forfeited when you purchase a subscription.
 

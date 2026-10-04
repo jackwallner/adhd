@@ -11,8 +11,20 @@ Next Cue's lane is task initiation and getting back on track, not time
 pressure. The sibling app Shoes On (`~/time`) owns leave-by deadlines, backward
 planning, and learned step timing; do not copy those into Next Cue.
 
+This lane is also what keeps the two apps distinct for App Review 4.3: never
+add leave-by deadlines, countdowns, or learned step timing here.
+
 ## Principles
 
+- "I'm stuck" is the signature feature. Each step can carry a
+  `RoutineStep.smallestStart` (a tiny first move). On the run screen, I'm
+  stuck swaps the step for it ("JUST THIS"), I started brings the whole step
+  back with "Nice start. Keep going." A step without one shows a generic
+  "Do ten seconds of it" and offers Save a smaller start, which writes to both
+  the run snapshot and the routine (`RoutineStore.setSmallestStart`). The
+  stuck state is view-only and clears when the step changes.
+- Templates ship with smallest starts filled in. The reminder body adds
+  "Even smaller: ..." and the drift check-in offers the smallest start.
 - Lead with the literal first step (Today card, reminder body). Starting one
   small action is easier than starting a routine.
 - Time is information, never a countdown. The step timer counts up beside the

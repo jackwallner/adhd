@@ -29,7 +29,12 @@ AGE_RATING = {
 
 REVIEW_NOTES = (
     "Next Cue is a routine planner. No account or login is needed. "
-    "Create a routine from a template on first launch, then tap Start routine to step through it. "
+    "Next Cue helps people start routines they are stuck on. Create a routine from a template on first launch, "
+    "then tap Start routine to step through it. On any step, tap I'm stuck to shrink it to its smallest start "
+    "(a tiny first move); I started brings the whole step back. Steps can also be moved to later or left out "
+    "of a short version, and the step timer only counts up. "
+    "The developer's other app, Shoes On, is a different product: it plans backward from a leave time and learns "
+    "step durations. Next Cue has no leave time, countdowns, or learned timing. "
     "The first routine is free. Adding a second routine opens the Next Cue Pro paywall "
     "(monthly and yearly subscriptions with a one-week free trial, plus a lifetime purchase). "
     "Restore purchases, Privacy Policy, Terms, and the Apple Standard EULA are linked on the paywall and in Settings. "

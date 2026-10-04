@@ -6,7 +6,7 @@ An ADHD routine companion that helps people plan daily steps and see what to do 
 
 - iOS 17+, Swift 6, SwiftUI, XcodeGen (`project.yml`).
 - App: `com.jackwallner.adhd`; Live Activity widget: `com.jackwallner.adhd.widget`; unit tests: `com.jackwallner.adhd.tests`; UI tests: `com.jackwallner.adhd.uitests`.
-- App Store Connect app: `6815023447`, listing title `Next Cue: ADHD Routine Coach`.
+- App Store Connect app: `6815023447`, listing title `Next Cue: ADHD Routine Starter`.
 - RevenueCat project: `proj202c8445`, app `appa1f2af1602`, entitlement `pro`, offering `default`.
 - Subscription products use `com.jackwallner.adhd.monthly`, `.yearly`, and `.lifetime`.
 

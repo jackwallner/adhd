@@ -12,7 +12,7 @@ paths:
 
 - Bundle ID: `com.jackwallner.adhd`.
 - App Store Connect app ID: `6815023447`.
-- Store title: `Next Cue: ADHD Routine Coach`.
+- Store title: `Next Cue: ADHD Routine Starter`.
 - Privacy, support, and marketing URLs use `https://jackwallner.github.io/adhd/`.
 - The app has a RevenueCat project with `pro` entitlement and `default` offering. The public SDK key lives in `Shared/Services/StoreService.swift`; no RevenueCat secret key belongs in this repository.
 
