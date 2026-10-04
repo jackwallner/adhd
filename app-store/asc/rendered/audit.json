@@ -7,52 +7,52 @@
   ],
   "copy_contract": "single-header-benefit-story-v3",
   "market": {
-    "category": "Daily routine planners",
-    "audience": "Adults who want a lightweight way to begin and resume personal routines, including people looking for ADHD-friendly structure",
-    "problem": "Broad planners can show many tasks at once, while an interruption can make it hard to find where a routine left off.",
-    "advantage": "Next Cue puts one scheduled routine first, guides the user through one visible step at a time, and saves a paused run for later. The first routine is free; Pro adds more routines.",
-    "competitive_context": "Routine apps range from full-day visual planners to timer-led habit trackers. Next Cue focuses on a scheduled personal routine, one current step, and a calm way to return after an interruption, without streak pressure or a countdown timer.",
+    "category": "ADHD routine starters",
+    "audience": "Adults who know what their routine is but get stuck starting it, including people looking for ADHD-friendly structure",
+    "problem": "Checklists and planners list what to do, but a step that feels too big still leaves the person frozen before it.",
+    "advantage": "Next Cue shrinks any step to a tiny first move when the user taps I'm stuck, then brings the whole step back once they start. Templates ship with these smallest starts filled in. The first routine is free; Pro adds more routines.",
+    "competitive_context": "Routine apps range from full-day visual planners to timer-led habit trackers. Next Cue focuses on the moment of starting: one current step, a smaller version of it on demand, and no streaks or countdowns.",
     "search_intent": [
       "ADHD routine app",
-      "daily routine planner",
+      "task initiation",
+      "procrastination help",
       "step by step routine",
       "morning routine planner",
-      "evening routine planner",
       "executive function planner"
     ],
     "proof_points": [
       {
-        "claim": "The Today screen leads with one scheduled routine and a direct start action.",
-        "source": "captures/01-home.png"
+        "claim": "The Today screen leads with the first step of the next routine and an even smaller way in.",
+        "source": "raw/01-home.png"
       },
       {
-        "claim": "The run screen keeps the current step, progress, and completion controls visible together.",
-        "source": "captures/02-run.png"
+        "claim": "Tapping I'm stuck replaces the step with its smallest start and an I started button.",
+        "source": "raw/02-stuck.png"
+      },
+      {
+        "claim": "The run screen shows one current step with an I'm stuck button and a count-up timer.",
+        "source": "raw/03-run.png"
+      },
+      {
+        "claim": "The editor gives every step an optional smallest start, filled in by the template.",
+        "source": "raw/04-editor.png"
       },
       {
         "claim": "The paused run keeps the current step available with a clear resume action.",
-        "source": "captures/03-paused.png"
+        "source": "raw/05-paused.png"
       },
       {
-        "claim": "The completion screen confirms the finished routine without a timer or streak count.",
-        "source": "captures/04-complete.png"
-      },
-      {
-        "claim": "The routine library keeps separate morning and evening routines with their own schedules.",
-        "source": "captures/05-routines.png"
-      },
-      {
-        "claim": "The editor offers templates plus editable steps and per-step time estimates.",
-        "source": "captures/06-editor.png"
+        "claim": "The completion screen confirms the finished routine without a streak count.",
+        "source": "raw/06-complete.png"
       }
     ]
   },
   "sets": [
     {
-      "id": "one-clear-next-step",
+      "id": "smaller-first-step",
       "submission": true,
       "story": {
-        "throughline": "Make a routine easier to begin, follow, and return to when the day interrupts",
+        "throughline": "Make the first move small enough to start, then keep going one step at a time",
         "sequence": [
           "problem",
           "mechanism",
@@ -61,24 +61,24 @@
       },
       "frames": [
         {
-          "filename": "01-make-routines-easier-to-start.png",
-          "path": "one-clear-next-step/01-make-routines-easier-to-start.png",
-          "header": "Make routines easier to start",
+          "filename": "01-start-with-just-the-first-step.png",
+          "path": "smaller-first-step/01-start-with-just-the-first-step.png",
+          "header": "Start with just the first step",
           "pitch": {
-            "benefit": "See one scheduled routine and a direct way to begin",
-            "problem": "A broad list of tasks can leave the first action unclear.",
-            "advantage": "Today leads with the next scheduled routine and a clear start action.",
-            "header_problem": "too many possible tasks",
-            "header_advantage": "one next routine",
+            "benefit": "Know the one action that starts your routine right now",
+            "problem": "A whole routine can feel like too much to begin.",
+            "advantage": "Today names only the first step, plus an even smaller way in.",
+            "header_problem": "a routine that feels too big",
+            "header_advantage": "one first step",
             "search_terms": [
               "ADHD routine app",
-              "daily routine planner"
+              "task initiation"
             ],
-            "proof": "The literal Today screen shows the next routine, its schedule, and Start routine. This frame uses a seeded Pro state because the sample includes morning and evening routines."
+            "proof": "The real Today screen shows Evening reset with its first step and Even smaller: Pick a shirt."
           },
           "capture_flow": "home",
           "evidence_status": "canonical",
-          "benefit": "See one scheduled routine and a direct way to begin",
+          "benefit": "Know the one action that starts your routine right now",
           "generic_header_terms": [],
           "size": [
             1320,
@@ -92,41 +92,89 @@
           "header_font_size": 164,
           "header_lines": 2,
           "header_bounds": [
-            175,
+            194,
             158,
-            1145,
-            443
+            1126,
+            471
           ],
           "story_role": "problem",
-          "story_focus": "routines easier to start",
+          "story_focus": "just the first step",
           "background_id": "theme",
-          "foreground_sha256": "1f87b211f64030644a5af098b230f7855b9b75880988dee4c9e5c858620d7da6",
+          "foreground_sha256": "fc537fb0573a4a5a98fd44e86d104afed3b48c2456b489483aeff55e0067e16a",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
           },
-          "thumbnail_ocr": "Make routines easier to start zn What's next? Morning start \u00b0 Also today 1 ec Evening reset >> + Adda routine = 8 *&",
+          "thumbnail_ocr": "Start with just the first step 9:41 atl > \u00a9 & + What's next? Evening reset = '& Low energy? Short version: 3 steps, 7 min. Other days",
           "corner_contrast_vs_ink": 9.9
         },
         {
-          "filename": "02-keep-the-next-step-in-view.png",
-          "path": "one-clear-next-step/02-keep-the-next-step-in-view.png",
-          "header": "Keep the next step in view",
+          "filename": "02-shrink-a-step-when-youre-stuck.png",
+          "path": "smaller-first-step/02-shrink-a-step-when-youre-stuck.png",
+          "header": "Shrink a step when you\u2019re stuck",
           "pitch": {
-            "benefit": "Follow the current step without scanning the full routine",
-            "problem": "A checklist can still leave a person deciding which task to do now.",
-            "advantage": "The run screen puts one current step, progress, and step controls together.",
+            "benefit": "Turn a frozen moment into one tiny move you can do now",
+            "problem": "Knowing the step does not make starting it easier.",
+            "advantage": "I'm stuck swaps the step for its smallest start, then I started brings the whole step back.",
+            "header_problem": "freezing before a step",
+            "header_advantage": "a tiny first move",
+            "search_terms": [
+              "procrastination help",
+              "task initiation"
+            ],
+            "proof": "The real run screen in stuck mode shows JUST THIS, Sit up and put both feet on the floor, and I started."
+          },
+          "capture_flow": "stuck",
+          "evidence_status": "canonical",
+          "benefit": "Turn a frozen moment into one tiny move you can do now",
+          "generic_header_terms": [],
+          "size": [
+            1320,
+            2868
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 140,
+          "header_lines": 2,
+          "header_bounds": [
+            127,
+            153,
+            1193,
+            420
+          ],
+          "story_role": "mechanism",
+          "story_focus": "shrink a step",
+          "background_id": "theme",
+          "foreground_sha256": "f05a5ca935141193d15710b2a3d43deafe4292ceaefd40aa3bc7815a82d904cd",
+          "background_contrast": {
+            "top": 10.25,
+            "bottom": 9.57
+          },
+          "thumbnail_ocr": "Shrink a step when you're stuck 9:41 al > i] Morning start aes Sit up and put both feet on the floor Part of \u201cGet out of bed\". Stopping after is allowed.",
+          "corner_contrast_vs_ink": 9.9
+        },
+        {
+          "filename": "03-see-only-the-step-youre-on.png",
+          "path": "smaller-first-step/03-see-only-the-step-youre-on.png",
+          "header": "See only the step you\u2019re on",
+          "pitch": {
+            "benefit": "Follow your routine without scanning a whole list",
+            "problem": "A checklist still leaves a person choosing what to do now.",
+            "advantage": "The run screen shows one current step, a count-up timer, and I'm stuck.",
             "header_problem": "choosing from a checklist",
             "header_advantage": "one current step",
             "search_terms": [
               "step by step routine",
               "morning routine planner"
             ],
-            "proof": "The real run screen shows Get out of bed as the current step, with progress and Done with this step."
+            "proof": "The real run screen shows Get out of bed, a count-up timer, I'm stuck, and Done."
           },
           "capture_flow": "run",
           "evidence_status": "canonical",
-          "benefit": "Follow the current step without scanning the full routine",
+          "benefit": "Follow your routine without scanning a whole list",
           "generic_header_terms": [],
           "size": [
             1320,
@@ -140,41 +188,88 @@
           "header_font_size": 164,
           "header_lines": 2,
           "header_bounds": [
-            185,
+            174,
             158,
-            1134,
-            471
+            1145,
+            473
           ],
-          "story_role": "mechanism",
-          "story_focus": "the next step in view",
+          "story_role": "proof",
+          "story_focus": "only the step you\u2019re on",
           "background_id": "theme",
-          "foreground_sha256": "40697f9f7bbb6d5d7e1ddd461221ce2c2e86c42010b3ec8d362f067d8cfbe8a9",
+          "foreground_sha256": "d42e160c9963b04f1ea5d225dea8bf92bc49a11ccf403edb156bf2dff81961cc",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
           },
-          "thumbnail_ocr": "Keep the next step in view 9:41 al SF il Poy One step at a time Get out of bed Put both feet on the floor",
+          "thumbnail_ocr": "See only the step you're on i] Morning start one",
           "corner_contrast_vs_ink": 9.9
         },
         {
-          "filename": "03-pick-up-again-after-a-pause.png",
-          "path": "one-clear-next-step/03-pick-up-again-after-a-pause.png",
+          "filename": "04-give-every-step-a-tiny-first-move.png",
+          "path": "smaller-first-step/04-give-every-step-a-tiny-first-move.png",
+          "header": "Give every step a tiny first move",
+          "pitch": {
+            "benefit": "Have a ready-made way in for every step",
+            "problem": "Users rarely know a smaller version when they are already stuck.",
+            "advantage": "Templates fill in a smallest start for each step, and every one is editable.",
+            "header_problem": "no plan for getting unstuck",
+            "header_advantage": "smallest starts filled in",
+            "search_terms": [
+              "executive function planner",
+              "routine planner"
+            ],
+            "proof": "The real editor shows Morning start with a smallest start under each step."
+          },
+          "capture_flow": "editor",
+          "evidence_status": "canonical",
+          "benefit": "Have a ready-made way in for every step",
+          "generic_header_terms": [],
+          "size": [
+            1320,
+            2868
+          ],
+          "mode": "RGB",
+          "header_only": true,
+          "compositor_text_layers": [
+            "header"
+          ],
+          "header_font_size": 164,
+          "header_lines": 2,
+          "header_bounds": [
+            123,
+            158,
+            1197,
+            473
+          ],
+          "story_role": "support",
+          "story_focus": "a tiny first move",
+          "background_id": "theme",
+          "foreground_sha256": "d9e3e1a2be79e71b7c56699e355af4a1ba2c5bbb92b502167436a3f56180f795",
+          "background_contrast": {
+            "top": 10.25,
+            "bottom": 9.57
+          },
+          "thumbnail_ocr": "9:41 wil F \u00a9\u00bb Cancel New routine Save Name Morning start Steps about 28 min 1 Get out of bed *. Sit up and put both feet on the floor \u00a9 2min \u00a9 Optional 2 Drink aglass of water % Fillthe glass 3 Getdressed %_ Put on one sock 4 Make the bed Good enough is fine . Pull the cover up PEREEE = options!",
+          "corner_contrast_vs_ink": 9.9
+        },
+        {
+          "filename": "05-pick-up-again-after-a-pause.png",
+          "path": "smaller-first-step/05-pick-up-again-after-a-pause.png",
           "header": "Pick up again after a pause",
           "pitch": {
-            "benefit": "Return to an unfinished routine at its saved step",
-            "problem": "An interruption can break a run and make the next action hard to find again.",
-            "advantage": "Next Cue saves the current run so the person can pause and resume later.",
-            "header_problem": "a broken routine",
-            "header_advantage": "a saved next step",
+            "benefit": "Return to the same step after an interruption",
+            "problem": "An interruption can make it hard to find where a routine left off.",
+            "advantage": "A paused run keeps the current step and a clear resume action.",
+            "header_problem": "losing your place",
+            "header_advantage": "your place saved",
             "search_terms": [
-              "resume routine",
-              "routine reminders"
+              "ADHD routine app"
             ],
-            "proof": "The paused screen shows the preserved current step and Resume. A store test also verifies that progress survives relaunch."
+            "proof": "The real paused run screen shows Paused. Your place is saved. and Resume."
           },
           "capture_flow": "paused",
           "evidence_status": "canonical",
-          "benefit": "Return to an unfinished routine at its saved step",
+          "benefit": "Return to the same step after an interruption",
           "generic_header_terms": [],
           "size": [
             1320,
@@ -193,36 +288,35 @@
             1115,
             471
           ],
-          "story_role": "proof",
-          "story_focus": "again after a pause",
+          "story_role": "support",
+          "story_focus": "pick up again",
           "background_id": "theme",
-          "foreground_sha256": "fb1ed16b1e8277273aada460f6b907b21d543a8f271e16b9a4c4543d64030354",
+          "foreground_sha256": "1043088809608f316e01a1b159332f3f23db4ca2d9bc8e41ed70d157e82127b2",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
           },
-          "thumbnail_ocr": "Pick up again after a pause 9:41 al > One step at a time Get out of bed Put both feet on the floor @ Paused. Come back whenever you're ready.",
+          "thumbnail_ocr": "Pick up again after a pause 9:41 rl) al > x Morning start aes Get out of bed",
           "corner_contrast_vs_ink": 9.9
         },
         {
-          "filename": "04-finish-at-your-own-pace.png",
-          "path": "one-clear-next-step/04-finish-at-your-own-pace.png",
-          "header": "Finish a routine at your own pace",
+          "filename": "06-finish-without-streaks-or-guilt.png",
+          "path": "smaller-first-step/06-finish-without-streaks-or-guilt.png",
+          "header": "Finish without streaks or guilt",
           "pitch": {
-            "benefit": "Finish a routine without a countdown or a streak requirement",
-            "problem": "Timed routines and streak pressure can make a flexible routine feel like a test.",
-            "advantage": "Next Cue tracks completed steps and leaves the user free to return when it fits.",
-            "header_problem": "timer and streak pressure",
-            "header_advantage": "progress at your pace",
+            "benefit": "Feel done without a streak to protect",
+            "problem": "Streak apps can turn a missed day into a reason to quit.",
+            "advantage": "The finish screen confirms what you did with no streak count.",
+            "header_problem": "streak pressure",
+            "header_advantage": "a calm finish",
             "search_terms": [
-              "flexible daily routine",
-              "routine planner"
+              "habit tracker without streaks"
             ],
-            "proof": "The completion screen celebrates finishing and invites the user back whenever the routine fits."
+            "proof": "The real completion screen shows That's a wrap with steps done and active time."
           },
           "capture_flow": "complete",
           "evidence_status": "canonical",
-          "benefit": "Finish a routine without a countdown or a streak requirement",
+          "benefit": "Feel done without a streak to protect",
           "generic_header_terms": [],
           "size": [
             1320,
@@ -233,130 +327,38 @@
           "compositor_text_layers": [
             "header"
           ],
-          "header_font_size": 152,
+          "header_font_size": 164,
           "header_lines": 2,
           "header_bounds": [
-            120,
-            154,
-            1199,
-            447
+            162,
+            158,
+            1158,
+            473
           ],
           "story_role": "support",
-          "story_focus": "a routine at your own pace",
+          "story_focus": "without streaks or guilt",
           "background_id": "theme",
-          "foreground_sha256": "1caa8b2c04e8ca5e1f01c9ac336d8eee43fcf57699859b750c51df79ad183297",
+          "foreground_sha256": "71eae5e7c4b070dbe49cb64661717ded5bfb0e598667aadab3439f12cd4a86dd",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
           },
-          "thumbnail_ocr": "Finish a routine at your own pace v That's a wrap. Want another routine for a different part of your day?",
-          "corner_contrast_vs_ink": 9.9
-        },
-        {
-          "filename": "05-plan-more-routines-with-pro.png",
-          "path": "one-clear-next-step/05-plan-more-routines-with-pro.png",
-          "header": "Plan more routines with Pro",
-          "pitch": {
-            "benefit": "Keep separate morning and evening routines in one library",
-            "problem": "One routine may not fit every part of a day.",
-            "advantage": "Next Cue Pro adds more routines while the first routine stays free.",
-            "header_problem": "one routine for every part of the day",
-            "header_advantage": "separate routines with Pro",
-            "search_terms": [
-              "morning and evening routine",
-              "multiple routines"
-            ],
-            "proof": "The library shows the seeded morning and evening routines. Pro is explicit in the header; the first routine remains free."
-          },
-          "capture_flow": "routines",
-          "evidence_status": "canonical",
-          "benefit": "Keep separate morning and evening routines in one library",
-          "generic_header_terms": [],
-          "size": [
-            1320,
-            2868
-          ],
-          "mode": "RGB",
-          "header_only": true,
-          "compositor_text_layers": [
-            "header"
-          ],
-          "header_font_size": 152,
-          "header_lines": 2,
-          "header_bounds": [
-            132,
-            154,
-            1187,
-            420
-          ],
-          "story_role": "support",
-          "story_focus": "more routines with Pro",
-          "background_id": "theme",
-          "foreground_sha256": "a068d2fe1950c1d5a9fb8558e5a4f0dc485ad587ae764d6900a7d579973a8eff",
-          "background_contrast": {
-            "top": 10.25,
-            "bottom": 9.57
-          },
-          "thumbnail_ocr": "Plan more routines with Pro + Routines * 8 *",
-          "corner_contrast_vs_ink": 9.9
-        },
-        {
-          "filename": "06-build-routines-your-way-with-pro.png",
-          "path": "one-clear-next-step/06-build-routines-your-way-with-pro.png",
-          "header": "Build routines your way with Pro",
-          "pitch": {
-            "benefit": "Start from a template, change each step, and choose the days it fits",
-            "problem": "A fixed routine can be hard to use when the steps or schedule do not fit.",
-            "advantage": "Next Cue makes steps and weekly reminders editable for each routine.",
-            "header_problem": "a one-size routine",
-            "header_advantage": "editable routine templates",
-            "search_terms": [
-              "custom routine planner",
-              "scheduled routines"
-            ],
-            "proof": "The editor shows routine templates, editable steps, reminder time, and selected weekdays. The Pro requirement for adding another routine is named in the header."
-          },
-          "capture_flow": "editor",
-          "evidence_status": "canonical",
-          "benefit": "Start from a template, change each step, and choose the days it fits",
-          "generic_header_terms": [],
-          "size": [
-            1320,
-            2868
-          ],
-          "mode": "RGB",
-          "header_only": true,
-          "compositor_text_layers": [
-            "header"
-          ],
-          "header_font_size": 144,
-          "header_lines": 2,
-          "header_bounds": [
-            130,
-            152,
-            1189,
-            430
-          ],
-          "story_role": "support",
-          "story_focus": "routines your way",
-          "background_id": "theme",
-          "foreground_sha256": "ec3d2d5203e8485e6eaaa1215eda9fa7d1e6ba0fa8a055e2cccba525ff533c8d",
-          "background_contrast": {
-            "top": 10.25,
-            "bottom": 9.57
-          },
-          "thumbnail_ocr": "Build routines your way with Pro a1 all 3 \u00a9 Cancel New routine Choose a starting point Use a template as-is or make it yours IMotring arart Get out the door \u00a9 + Evening reset Start from scratch Name your routine Morning start Your steps 4 1 Get outof bed (2)",
+          "thumbnail_ocr": "Finish without streaks or guilt",
           "corner_contrast_vs_ink": 9.9
         }
       ],
       "errors": [],
-      "warnings": [],
+      "warnings": [
+        "04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']"
+      ],
       "status": "pass"
     }
   ],
   "errors": [],
-  "warnings": [],
-  "release_requested": false,
+  "warnings": [
+    "smaller-first-step: 04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']"
+  ],
+  "release_requested": true,
   "release_ready": true,
   "disposition": "release-ready",
   "capture_status": "ok",

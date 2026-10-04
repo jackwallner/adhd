@@ -85,7 +85,8 @@
             "name": "01-home.png"
           }
         ],
-        "ready_timeout": 40
+        "ready_timeout": 90,
+        "launch_timeout": 150
       },
       {
         "id": "stuck",
@@ -102,7 +103,8 @@
             "name": "02-stuck.png"
           }
         ],
-        "ready_timeout": 40
+        "ready_timeout": 90,
+        "launch_timeout": 150
       },
       {
         "id": "run",
@@ -119,7 +121,8 @@
             "name": "03-run.png"
           }
         ],
-        "ready_timeout": 40
+        "ready_timeout": 90,
+        "launch_timeout": 150
       },
       {
         "id": "editor",
@@ -137,7 +140,8 @@
             "name": "04-editor.png"
           }
         ],
-        "ready_timeout": 40
+        "ready_timeout": 90,
+        "launch_timeout": 150
       },
       {
         "id": "paused",
@@ -154,7 +158,8 @@
             "name": "05-paused.png"
           }
         ],
-        "ready_timeout": 40
+        "ready_timeout": 90,
+        "launch_timeout": 150
       },
       {
         "id": "complete",
@@ -172,7 +177,8 @@
             "name": "06-complete.png"
           }
         ],
-        "ready_timeout": 40
+        "ready_timeout": 90,
+        "launch_timeout": 150
       }
     ]
   },

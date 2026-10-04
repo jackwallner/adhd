@@ -7,19 +7,23 @@ Capture status: `ok`
 
 This report combines file-spec checks with an independent thumbnail and OCR pass. Open each `contact-sheet.png` and `search-grid.png` before approving a set.
 
+## Warnings
+
+- smaller-first-step: 04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']
+
 ## Market brief
 
-- Category: Daily routine planners
-- Audience: Adults who want a lightweight way to begin and resume personal routines, including people looking for ADHD-friendly structure
-- Problem: Broad planners can show many tasks at once, while an interruption can make it hard to find where a routine left off.
-- Advantage: Next Cue puts one scheduled routine first, guides the user through one visible step at a time, and saves a paused run for later. The first routine is free; Pro adds more routines.
-- Competitive context: Routine apps range from full-day visual planners to timer-led habit trackers. Next Cue focuses on a scheduled personal routine, one current step, and a calm way to return after an interruption, without streak pressure or a countdown timer.
+- Category: ADHD routine starters
+- Audience: Adults who know what their routine is but get stuck starting it, including people looking for ADHD-friendly structure
+- Problem: Checklists and planners list what to do, but a step that feels too big still leaves the person frozen before it.
+- Advantage: Next Cue shrinks any step to a tiny first move when the user taps I'm stuck, then brings the whole step back once they start. Templates ship with these smallest starts filled in. The first routine is free; Pro adds more routines.
+- Competitive context: Routine apps range from full-day visual planners to timer-led habit trackers. Next Cue focuses on the moment of starting: one current step, a smaller version of it on demand, and no streaks or countdowns.
 
 ## Sets
 
 | Set | Status | Frames |
 | --- | --- | ---: |
-| `one-clear-next-step` | pass | 6 |
+| `smaller-first-step` | pass | 6 |
 
 ## Review contract
 
