@@ -94,7 +94,11 @@ struct NextCuePaywallView: View {
                 }
             }
             .safeAreaInset(edge: .bottom, spacing: 0) { purchaseFooter }
-            .onAppear { purchases.trackPaywallImpression(id: "nextcue_main") }
+            .onAppear {
+                // A message from an earlier restore in Settings is not about this visit.
+                purchases.clearError()
+                purchases.trackPaywallImpression(id: "nextcue_main")
+            }
             .onChange(of: purchases.isPro) { _, isPro in
                 if isPro { dismiss() }
             }

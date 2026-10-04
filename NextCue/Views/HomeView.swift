@@ -84,7 +84,10 @@ struct HomeView: View {
     @ViewBuilder
     private func content(now: Date) -> some View {
         let plan = TodayPlan(routines: routines.routines, completions: routines.completions, now: now)
-        let lead = TodayPlan(routines: unlockedRoutines, completions: routines.completions, now: now).upNext
+        let unlockedPlan = TodayPlan(routines: unlockedRoutines, completions: routines.completions, now: now)
+        // On a day with nothing scheduled, the first routine still leads so starting is one tap away.
+        let isOffDay = unlockedPlan.routines.isEmpty
+        let lead = unlockedPlan.upNext ?? (isOffDay ? unlockedRoutines.first { $0.isEnabled } : nil)
         let leadID = routines.activeRun?.routineID ?? lead?.id
         let todayIDs = Set(plan.routines.map(\.id))
         let laterToday = plan.routines.filter { $0.id != leadID }
@@ -98,7 +101,7 @@ struct HomeView: View {
                 .accessibilityAddTraits(.isHeader)
         }
 
-        leadCard(lead: lead, offDay: plan.routines.isEmpty, now: now)
+        leadCard(lead: lead, offDay: isOffDay, now: now)
             .transition(.opacity.combined(with: .scale(scale: 0.98)))
 
         if !laterToday.isEmpty {
@@ -134,6 +137,7 @@ struct HomeView: View {
             UpNextCard(
                 routine: lead,
                 now: now,
+                isOffDay: offDay,
                 start: { start(lead) },
                 startShort: { start(lead, shortVersion: true) },
                 edit: { sheet = .edit(lead) }
@@ -263,12 +267,14 @@ private enum HomeSheet: Identifiable {
 private struct UpNextCard: View {
     let routine: Routine
     let now: Date
+    let isOffDay: Bool
     let start: () -> Void
     let startShort: () -> Void
     let edit: () -> Void
 
     /// A routine whose time passed long ago drops the time, so the card reads as an option and not as late.
     private var eyebrow: String {
+        if isOffDay { return "NOTHING SCHEDULED TODAY" }
         guard routine.isScheduled else { return "UP NEXT" }
         let calendar = Calendar.current
         let nowMinute = calendar.component(.hour, from: now) * 60 + calendar.component(.minute, from: now)

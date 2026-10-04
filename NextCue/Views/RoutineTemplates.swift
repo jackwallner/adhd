@@ -183,7 +183,7 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
                 ("Name the task", "One sentence is enough", "Say it out loud", 1, false),
                 ("Get what it needs", "", "Open the file or pick up the tool", 2, false),
                 ("Do the easiest part first", "", "Look at it for one minute", 5, false),
-                ("Keep going for 10 minutes", "Stopping after is allowed", "Do one more small piece", 10, false),
+                ("Keep going for 10 minutes", "Stopping after is allowed", "Do one more small piece", 10, true),
                 ("Leave a note for next time", "", "Write one line", 1, true),
             ]
         case .evening:

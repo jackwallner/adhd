@@ -148,11 +148,12 @@ struct RoutineRunView: View {
                 .scrollBounceBehavior(.basedOnSize)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) { controls(run) }
-            .overlay(alignment: .bottom) {
+            // The toast sits at the top so it never hides the next step card.
+            .overlay(alignment: .top) {
                 if let toast {
                     ToastView(toast: toast) { perform(.back) }
-                        .padding(.bottom, run.isPaused ? 96 : 150)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .padding(.top, 4)
+                        .transition(.move(edge: .top).combined(with: .opacity))
                 }
             }
         } else {
@@ -734,7 +735,7 @@ private struct StepTimer: View {
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Time on this step")
-            .accessibilityValue("\(Int(elapsed / 60)) minutes of about \(estimateMinutes)")
+            .accessibilityValue("\(NextCueFormat.minutes(Int(elapsed / 60))) of about \(NextCueFormat.minutes(estimateMinutes))")
         }
     }
 }

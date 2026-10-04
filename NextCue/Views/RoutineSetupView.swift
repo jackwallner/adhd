@@ -427,9 +427,15 @@ private struct StepRow: View {
                         .onSubmit(onSubmit)
                         .accessibilityLabel("Step \(number) smallest start, optional")
                 }
-                HStack(spacing: 8) {
-                    MinutesMenu(minutes: $step.minutes)
-                    OptionalChip(isOptional: $step.isOptional)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 8) {
+                        MinutesMenu(minutes: $step.minutes)
+                        OptionalChip(isOptional: $step.isOptional)
+                    }
+                    VStack(alignment: .leading, spacing: 8) {
+                        MinutesMenu(minutes: $step.minutes)
+                        OptionalChip(isOptional: $step.isOptional)
+                    }
                 }
                 .padding(.top, 2)
             }
