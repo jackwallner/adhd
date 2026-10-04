@@ -104,8 +104,8 @@ private struct TemplateRow: View {
 
 enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
     case morning
-    case outTheDoor
     case workStart
+    case dreadedTask
     case evening
     case blank
 
@@ -114,8 +114,8 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
     var title: String {
         switch self {
         case .morning: "Morning start"
-        case .outTheDoor: "Get out the door"
         case .workStart: "Start work"
+        case .dreadedTask: "Start a dreaded task"
         case .evening: "Evening reset"
         case .blank: "Start from scratch"
         }
@@ -131,8 +131,8 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
     var symbol: String {
         switch self {
         case .morning: "sunrise"
-        case .outTheDoor: "figure.walk.departure"
         case .workStart: "laptopcomputer"
+        case .dreadedTask: "mountain.2"
         case .evening: "moon.stars"
         case .blank: "plus"
         }
@@ -146,53 +146,56 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
         }
     }
 
-    var minute: Int { self == .outTheDoor ? 30 : 0 }
-    var hasReminder: Bool { self != .blank }
+    var minute: Int { 0 }
+    /// A dreaded task has no set time, so it waits on Home as an anytime routine.
+    var hasReminder: Bool { self != .blank && self != .dreadedTask }
     var weekdays: [Int] { self == .evening ? [1, 2, 3, 4, 5, 6, 7] : [2, 3, 4, 5, 6] }
     var routineName: String { self == .blank ? "" : title }
 
     var setupSteps: [RoutineSetupStep] {
-        steps.map { RoutineSetupStep(name: $0.name, details: $0.details, minutes: $0.minutes, isOptional: $0.optional) }
+        steps.map {
+            RoutineSetupStep(name: $0.name, details: $0.details, smallestStart: $0.smallest, minutes: $0.minutes, isOptional: $0.optional)
+        }
     }
 
-    private var steps: [(name: String, details: String, minutes: Int, optional: Bool)] {
+    private var steps: [(name: String, details: String, smallest: String, minutes: Int, optional: Bool)] {
         switch self {
         case .morning:
             [
-                ("Get out of bed", "Both feet on the floor", 2, false),
-                ("Drink a glass of water", "", 1, false),
-                ("Get dressed", "", 8, false),
-                ("Make the bed", "Good enough is fine", 3, true),
-                ("Eat something", "Keep it simple", 10, false),
-                ("Gather what I need", "", 4, true),
-            ]
-        case .outTheDoor:
-            [
-                ("Get dressed", "", 8, false),
-                ("Pack my bag", "", 5, false),
-                ("Fill a water bottle", "", 2, true),
-                ("Keys, wallet, phone", "Touch each one", 2, false),
-                ("Put on shoes", "", 2, false),
+                ("Get out of bed", "", "Sit up and put both feet on the floor", 2, false),
+                ("Drink a glass of water", "", "Fill the glass", 1, false),
+                ("Get dressed", "", "Put on one sock", 8, false),
+                ("Make the bed", "Good enough is fine", "Pull the cover up", 3, true),
+                ("Eat something", "Keep it simple", "Open the fridge", 10, false),
+                ("Gather what I need", "", "Pick up your keys", 4, true),
             ]
         case .workStart:
             [
-                ("Get a drink", "", 3, true),
-                ("Clear the desk", "Just enough space to work", 3, true),
-                ("Pick the one first task", "Write it down", 2, false),
-                ("Put my phone out of reach", "", 1, false),
-                ("Open only what that task needs", "", 2, false),
-                ("Work on it for 10 minutes", "Stopping after is allowed", 10, false),
+                ("Get a drink", "", "Stand up", 3, true),
+                ("Clear the desk", "Just enough space to work", "Move one thing", 3, true),
+                ("Pick the one first task", "Write it down", "Write one word for it", 2, false),
+                ("Put my phone out of reach", "", "Turn it face down", 1, false),
+                ("Open only what that task needs", "", "Open one window", 2, false),
+                ("Work on it for 10 minutes", "Stopping after is allowed", "Do the first two minutes", 10, false),
+            ]
+        case .dreadedTask:
+            [
+                ("Name the task", "One sentence is enough", "Say it out loud", 1, false),
+                ("Get what it needs", "", "Open the file or pick up the tool", 2, false),
+                ("Do the easiest part first", "", "Look at it for one minute", 5, false),
+                ("Keep going for 10 minutes", "Stopping after is allowed", "Do one more small piece", 10, false),
+                ("Leave a note for next time", "", "Write one line", 1, true),
             ]
         case .evening:
             [
-                ("Put tomorrow’s clothes out", "", 4, false),
-                ("Tidy one surface", "", 5, true),
-                ("Charge my phone", "", 1, false),
-                ("Set out what I need", "", 5, true),
-                ("Brush my teeth", "", 3, false),
+                ("Put tomorrow’s clothes out", "", "Pick a shirt", 4, false),
+                ("Tidy one surface", "", "Put away three things", 5, true),
+                ("Charge my phone", "", "Find the charger", 1, false),
+                ("Set out what I need", "", "Put your bag by the door", 5, true),
+                ("Brush my teeth", "", "Put toothpaste on the brush", 3, false),
             ]
         case .blank:
-            [("", "", 5, false)]
+            [("", "", "", 5, false)]
         }
     }
 }

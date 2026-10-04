@@ -18,6 +18,12 @@ struct RoutineRunView: View {
     @State private var toast: RunToast?
     @State private var doneCount = 0
     @State private var moveCount = 0
+    /// The step shrunk to its smallest start. Matching by ID clears it as soon as the step changes.
+    @State private var stuckStepID: UUID?
+    /// The step the user got going on from its smallest start, for a word of encouragement.
+    @State private var startedStepID: UUID?
+    @State private var showSmallestPrompt = false
+    @State private var smallestDraft = ""
     @AppStorage("nextcue.reviewPromptHandled") private var reviewPromptHandled = false
     @AppStorage(NextCuePreferences.stepTimerKey) private var showsStepTimer = true
     @AppStorage(NextCuePreferences.keepAwakeKey) private var keepsScreenAwake = true
@@ -57,12 +63,20 @@ struct RoutineRunView: View {
                 NextCuePaywallView()
             }
             .sheet(isPresented: $showNewRoutine) { NewRoutineSheet() }
+            .alert("Smallest start", isPresented: $showSmallestPrompt) {
+                TextField("For example, Turn on the water", text: $smallestDraft)
+                Button("Save", action: saveSmallestStart)
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("What’s the tiniest move that gets this step going? You’ll see it here next time you’re stuck.")
+            }
         }
         .tint(NextCueStyle.accent)
         .sensoryFeedback(.success, trigger: doneCount)
         .sensoryFeedback(.selection, trigger: moveCount)
         .onAppear {
             trackedRunID = routines.activeRun?.id ?? (NextCueDebugLaunch.screen == "complete" ? routines.completions.last?.runID : nil)
+            if NextCueDebugLaunch.screen == "stuck" { stuckStepID = routines.activeRun?.currentStep?.id }
             updateIdleTimer()
         }
         .onChange(of: routines.activeRun?.id) { _, newID in
@@ -176,6 +190,8 @@ struct RoutineRunView: View {
         }
     }
 
+    private func isStuck(on step: RoutineStep) -> Bool { stuckStepID == step.id }
+
     private func stepFocus(run: RoutineRun, step: RoutineStep) -> some View {
         VStack(alignment: .leading, spacing: 22) {
             if run.isPaused {
@@ -186,34 +202,100 @@ struct RoutineRunView: View {
                     .padding(.vertical, 7)
                     .background(NextCueStyle.warmWash, in: Capsule())
                     .transition(.opacity.combined(with: .scale(scale: 0.9)))
+            } else if startedStepID == step.id {
+                Label("Nice start. Keep going.", systemImage: "sparkles")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(NextCueStyle.accent)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 7)
+                    .background(NextCueStyle.accentWash, in: Capsule())
+                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
             }
-            VStack(alignment: .leading, spacing: 12) {
-                Text(step.name)
-                    .font(.system(size: stepTitleSize, weight: .heavy, design: .rounded))
-                    .foregroundStyle(NextCueStyle.ink)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityAddTraits(.isHeader)
-                if let details = step.details,
-                   !details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(details)
-                        .font(.title3)
-                        .foregroundStyle(NextCueStyle.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .id(step.id)
-            .transition(stepTransition)
 
-            if showsStepTimer {
-                StepTimer(run: run, estimateMinutes: step.estimateMinutes)
+            if isStuck(on: step) {
+                stuckFocus(step)
+                    .transition(.opacity)
             } else {
-                Label("About \(NextCueFormat.minutes(step.estimateMinutes))", systemImage: "clock")
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(NextCueStyle.secondary)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text(step.name)
+                        .font(.system(size: stepTitleSize, weight: .heavy, design: .rounded))
+                        .foregroundStyle(NextCueStyle.ink)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityAddTraits(.isHeader)
+                    if let details = step.details,
+                       !details.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                        Text(details)
+                            .font(.title3)
+                            .foregroundStyle(NextCueStyle.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                .id(step.id)
+                .transition(stepTransition)
+
+                if showsStepTimer {
+                    StepTimer(run: run, estimateMinutes: step.estimateMinutes)
+                } else {
+                    Label("About \(NextCueFormat.minutes(step.estimateMinutes))", systemImage: "clock")
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(NextCueStyle.secondary)
+                }
+
+                if !run.isPaused {
+                    Button {
+                        withAnimation(.snappy) { stuckStepID = step.id }
+                    } label: {
+                        Label("I’m stuck", systemImage: "arrow.down.right.and.arrow.up.left")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(NextCueStyle.accent)
+                            .padding(.horizontal, 16)
+                            .frame(minHeight: 44)
+                            .background(NextCueStyle.accentWash, in: Capsule())
+                    }
+                    .buttonStyle(NextCuePressableStyle())
+                    .accessibilityHint("Shrinks this step to a tiny first move")
+                    .accessibilityIdentifier("run.stuck")
+                }
             }
         }
         .opacity(run.isPaused ? 0.55 : 1)
         .animation(.snappy, value: run.isPaused)
+    }
+
+    /// The step shrunk to one tiny move. Starting is the goal; finishing the step can come after.
+    private func stuckFocus(_ step: RoutineStep) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("JUST THIS")
+                .font(.caption.weight(.bold))
+                .tracking(1.05)
+                .foregroundStyle(NextCueStyle.accent)
+            Text(step.startCue ?? "Do ten seconds of it")
+                .font(.system(size: stepTitleSize, weight: .heavy, design: .rounded))
+                .foregroundStyle(NextCueStyle.ink)
+                .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
+            Text("Part of \u{201C}\(step.name)\u{201D}. Stopping after is allowed.")
+                .font(.title3)
+                .foregroundStyle(NextCueStyle.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack(spacing: 18) {
+                if step.startCue == nil {
+                    Button("Save a smaller start") {
+                        smallestDraft = ""
+                        showSmallestPrompt = true
+                    }
+                    .accessibilityHint("Saves a tiny first move for this step")
+                }
+                Button("Show the whole step") {
+                    withAnimation(.snappy) { stuckStepID = nil }
+                }
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(NextCueStyle.accent)
+            .buttonStyle(.plain)
+            .frame(minHeight: 44)
+        }
+        .id("stuck-\(step.id)")
     }
 
     private func nextUp(_ run: RoutineRun) -> some View {
@@ -254,11 +336,20 @@ struct RoutineRunView: View {
                 }
                 .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
             } else {
-                Button { perform(.done) } label: {
-                    Label(run.nextStep == nil ? "Done, finish routine" : "Done", systemImage: "checkmark")
+                if let step = run.currentStep, isStuck(on: step) {
+                    Button { startedSmall(step) } label: {
+                        Label("I started", systemImage: "arrow.right")
+                    }
+                    .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
+                    .accessibilityHint("Brings back the whole step")
+                    .accessibilityIdentifier("run.started")
+                } else {
+                    Button { perform(.done) } label: {
+                        Label(run.nextStep == nil ? "Done, finish routine" : "Done", systemImage: "checkmark")
+                    }
+                    .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
+                    .accessibilityIdentifier("run.done")
                 }
-                .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
-                .accessibilityIdentifier("run.done")
 
                 HStack(spacing: 0) {
                     if run.canDoLater {
@@ -462,6 +553,8 @@ struct RoutineRunView: View {
     private func perform(_ action: RunAction) {
         guard let run = routines.activeRun else { return }
         let stepName = run.currentStep?.name ?? ""
+        stuckStepID = nil
+        startedStepID = nil
         var saved = false
         withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : .spring(response: 0.42, dampingFraction: 0.86)) {
             switch action {
@@ -502,6 +595,20 @@ struct RoutineRunView: View {
                 withAnimation(.easeIn(duration: 0.2)) { toast = nil }
             }
         }
+    }
+
+    private func startedSmall(_ step: RoutineStep) {
+        moveCount += 1
+        withAnimation(.snappy) {
+            stuckStepID = nil
+            startedStepID = step.id
+        }
+    }
+
+    private func saveSmallestStart() {
+        guard let step = routines.activeRun?.currentStep,
+              !smallestDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        if !routines.setSmallestStart(smallestDraft, forStep: step.id) { showRoutineError = true }
     }
 
     private func finishRun() {

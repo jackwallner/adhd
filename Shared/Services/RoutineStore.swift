@@ -112,6 +112,27 @@ final class RoutineStore: ObservableObject {
         return commit { $0.activeRun = run }
     }
 
+    /// Saves a smallest start to the step in the run and in its routine, so it is there next time too.
+    @discardableResult
+    func setSmallestStart(_ text: String, forStep stepID: UUID) -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return false }
+        return commit { snapshot in
+            if var run = snapshot.activeRun {
+                for index in run.steps.indices where run.steps[index].id == stepID {
+                    run.steps[index].smallestStart = trimmed
+                }
+                snapshot.activeRun = run
+            }
+            for routineIndex in snapshot.routines.indices {
+                for index in snapshot.routines[routineIndex].steps.indices
+                where snapshot.routines[routineIndex].steps[index].id == stepID {
+                    snapshot.routines[routineIndex].steps[index].smallestStart = trimmed
+                }
+            }
+        }
+    }
+
     @discardableResult
     func pauseRun(now: Date = .now) -> Bool {
         guard var run = activeRun, !run.isPaused else { return false }

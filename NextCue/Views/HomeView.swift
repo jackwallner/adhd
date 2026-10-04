@@ -319,6 +319,13 @@ private struct UpNextCard: View {
                             .font(.system(.title3, design: .rounded).weight(.semibold))
                             .foregroundStyle(NextCueStyle.ink)
                             .fixedSize(horizontal: false, vertical: true)
+                        if let cue = first.startCue {
+                            Text("Even smaller: \(cue)")
+                                .font(.subheadline)
+                                .foregroundStyle(NextCueStyle.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .padding(.top, 2)
+                        }
                     }
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -351,9 +358,7 @@ private struct UpNextCard: View {
     }
 
     private var summary: String {
-        let minutes = routine.estimatedMinutes
-        let doneAround = NextCueFormat.time(now.addingTimeInterval(TimeInterval(minutes * 60)))
-        return "\(NextCueFormat.steps(routine.steps.count)) · about \(NextCueFormat.minutes(minutes))\nStart now, done around \(doneAround)"
+        "\(NextCueFormat.steps(routine.steps.count)) · about \(NextCueFormat.minutes(routine.estimatedMinutes))"
     }
 }
 

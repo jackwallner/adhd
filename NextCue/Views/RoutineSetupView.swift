@@ -225,7 +225,7 @@ struct RoutineSetupView: View {
                 }
             }
         } footer: {
-            Text("Tap Optional to leave a step out of the short version for low-energy days. Hold a step to drag it, or swipe left to delete.")
+            Text("A smallest start is the tiny first move you’ll see when you tap I’m stuck. Optional steps are left out of the short version for low-energy days. Hold a step to drag it, or swipe left to delete.")
         }
     }
 
@@ -371,6 +371,7 @@ private enum SetupField: Hashable {
     case name
     case step(UUID)
     case note(UUID)
+    case smallest(UUID)
 }
 
 private struct RoutineDraft: Equatable {
@@ -413,6 +414,19 @@ private struct StepRow: View {
                     .submitLabel(.next)
                     .onSubmit(onSubmit)
                     .accessibilityLabel("Step \(number) note, optional")
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.down.right.and.arrow.up.left")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(NextCueStyle.accent)
+                        .accessibilityHidden(true)
+                    TextField("Smallest start, for when you’re stuck", text: $step.smallestStart)
+                        .font(.subheadline)
+                        .foregroundStyle(NextCueStyle.ink)
+                        .focused(focus, equals: .smallest(step.id))
+                        .submitLabel(.next)
+                        .onSubmit(onSubmit)
+                        .accessibilityLabel("Step \(number) smallest start, optional")
+                }
                 HStack(spacing: 8) {
                     MinutesMenu(minutes: $step.minutes)
                     OptionalChip(isOptional: $step.isOptional)
@@ -516,13 +530,15 @@ struct RoutineSetupStep: Identifiable, Equatable {
     let id: UUID
     var name: String
     var details: String
+    var smallestStart: String
     var minutes: Int
     var isOptional: Bool
 
-    init(id: UUID = UUID(), name: String, details: String, minutes: Int, isOptional: Bool = false) {
+    init(id: UUID = UUID(), name: String, details: String, smallestStart: String = "", minutes: Int, isOptional: Bool = false) {
         self.id = id
         self.name = name
         self.details = details
+        self.smallestStart = smallestStart
         self.minutes = minutes
         self.isOptional = isOptional
     }
@@ -532,6 +548,7 @@ struct RoutineSetupStep: Identifiable, Equatable {
             id: step.id,
             name: step.name,
             details: step.details ?? "",
+            smallestStart: step.smallestStart ?? "",
             minutes: step.estimateMinutes,
             isOptional: step.isOptional
         )
@@ -543,6 +560,14 @@ struct RoutineSetupStep: Identifiable, Equatable {
     var routineStep: RoutineStep? {
         guard !trimmedName.isEmpty else { return nil }
         let note = details.trimmingCharacters(in: .whitespacesAndNewlines)
-        return RoutineStep(id: id, name: trimmedName, details: note.isEmpty ? nil : note, estimateMinutes: minutes, isOptional: isOptional)
+        let smallest = smallestStart.trimmingCharacters(in: .whitespacesAndNewlines)
+        return RoutineStep(
+            id: id,
+            name: trimmedName,
+            details: note.isEmpty ? nil : note,
+            estimateMinutes: minutes,
+            isOptional: isOptional,
+            smallestStart: smallest.isEmpty ? nil : smallest
+        )
     }
 }

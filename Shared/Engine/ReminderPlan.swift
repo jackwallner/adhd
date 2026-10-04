@@ -71,12 +71,14 @@ enum ReminderPlan {
         let fireAt = now.addingTimeInterval(max(estimate + grace - elapsed, 30))
         let stepName = step.name.trimmingCharacters(in: .whitespacesAndNewlines)
         let after = run.nextStep.map { "Next up: \($0.name)." } ?? "It’s the last one."
+        let body = step.startCue.map { "Stuck? Start with just this: \($0)." }
+            ?? "No rush. Tap Done when it’s finished. \(after)"
         return PlannedReminder(
             id: "\(nudgePrefix)\(run.id.uuidString).\(run.currentStepIndex).\(run.history.count)",
             routineID: run.routineID,
             fireAt: fireAt,
             title: "Still on “\(stepName.isEmpty ? "this step" : stepName)”?",
-            body: "No rush. Tap Done when it’s finished. \(after)"
+            body: body
         )
     }
 
@@ -97,8 +99,10 @@ enum ReminderPlan {
 
     /// Naming the first small action makes starting easier than naming the whole routine.
     private static func firstStepLine(for routine: Routine) -> String {
-        guard let first = routine.steps.first?.name.trimmingCharacters(in: .whitespacesAndNewlines),
-              !first.isEmpty else { return "Your routine is ready when you are." }
-        return "Just the first step: \(first)."
+        guard let step = routine.steps.first else { return "Your routine is ready when you are." }
+        let first = step.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !first.isEmpty else { return "Your routine is ready when you are." }
+        guard let cue = step.startCue else { return "Just the first step: \(first)." }
+        return "Just the first step: \(first). Even smaller: \(cue)."
     }
 }

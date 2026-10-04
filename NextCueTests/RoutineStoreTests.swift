@@ -131,6 +131,26 @@ final class RoutineStoreTests: XCTestCase {
         XCTAssertEqual(store.routines.first?.steps.first?.isOptional, false)
         XCTAssertEqual(store.activeRun?.history, [])
         XCTAssertEqual(store.activeRun?.isShortVersion, false)
+        XCTAssertNil(store.routines.first?.steps.first?.smallestStart)
+    }
+
+    func testSmallestStartSavedMidRunUpdatesRunAndRoutine() throws {
+        let fileURL = try temporaryStateURL()
+        let now = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
+        let shower = RoutineStep(name: "Shower")
+        let routine = Routine(name: "Morning", steps: [shower, RoutineStep(name: "Get dressed")])
+        let store = RoutineStore(fileURL: fileURL, now: now)
+        XCTAssertTrue(store.saveRoutine(routine))
+        XCTAssertTrue(store.startRun(routineID: routine.id, now: now))
+
+        XCTAssertFalse(store.setSmallestStart("   ", forStep: shower.id))
+        XCTAssertTrue(store.setSmallestStart("  Turn on the water ", forStep: shower.id))
+
+        XCTAssertEqual(store.activeRun?.currentStep?.startCue, "Turn on the water")
+        XCTAssertEqual(store.routines.first?.steps.first?.smallestStart, "Turn on the water")
+        XCTAssertNil(store.routines.first?.steps.last?.smallestStart)
+        let reloaded = RoutineStore(fileURL: fileURL, now: now)
+        XCTAssertEqual(reloaded.routines.first?.steps.first?.startCue, "Turn on the water")
     }
 
     private func temporaryStateURL() throws -> URL {

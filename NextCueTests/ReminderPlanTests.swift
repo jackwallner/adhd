@@ -75,6 +75,26 @@ final class ReminderPlanTests: XCTestCase {
         XCTAssertEqual(reminder.body, "Just the first step: Get out of bed.")
     }
 
+    func testReminderAndNudgeOfferTheSmallestStart() throws {
+        let now = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
+        let routine = Routine(
+            name: "Morning",
+            steps: [
+                RoutineStep(name: "Get out of bed", smallestStart: "Put both feet on the floor"),
+                RoutineStep(name: "Eat", smallestStart: " "),
+            ],
+            schedule: RoutineSchedule(hour: 8, minute: 0, weekdays: Set(1...7))
+        )
+
+        let reminder = try XCTUnwrap(ReminderPlan.reminders(routines: [routine], completions: [], activeRun: nil, now: now).first)
+        XCTAssertEqual(reminder.body, "Just the first step: Get out of bed. Even smaller: Put both feet on the floor.")
+
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, at: now))
+        XCTAssertEqual(ReminderPlan.nudge(for: run, now: now)?.body, "Stuck? Start with just this: Put both feet on the floor.")
+        XCTAssertTrue(RoutineEngine.completeCurrentStep(&run, at: now))
+        XCTAssertTrue(ReminderPlan.nudge(for: run, now: now)?.body.hasPrefix("No rush.") == true)
+    }
+
     func testNudgeFiresAfterEstimatePlusGraceAndNotWhilePaused() throws {
         let start = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
         let routine = Routine(name: "Morning", steps: [

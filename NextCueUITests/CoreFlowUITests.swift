@@ -57,6 +57,65 @@ final class CoreFlowUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "You did the short version")).firstMatch.exists)
     }
 
+    func testStuckShrinksTheStepAndStartingBringsItBack() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ResetUITestData"]
+        app.launch()
+
+        pickMorningTemplateScheduledToday(app)
+        saveRoutine(app)
+        XCTAssertTrue(app.buttons["Start routine"].waitForExistence(timeout: 5))
+        app.buttons["Start routine"].tap()
+
+        // A template step shrinks to its smallest start, and starting brings the whole step back.
+        XCTAssertTrue(app.buttons["run.stuck"].waitForExistence(timeout: 5))
+        app.buttons["run.stuck"].tap()
+        XCTAssertTrue(app.staticTexts["Sit up and put both feet on the floor"].waitForExistence(timeout: 5))
+        app.buttons["run.started"].tap()
+        XCTAssertTrue(app.staticTexts["Nice start. Keep going."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Get out of bed"].exists)
+        app.buttons["run.done"].tap()
+        XCTAssertTrue(app.staticTexts["STEP 2 OF 6"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["Nice start. Keep going."].exists)
+
+        // The next step shrinks too, and the whole step can come back without starting.
+        app.buttons["run.stuck"].tap()
+        XCTAssertTrue(app.staticTexts["Fill the glass"].waitForExistence(timeout: 5))
+        app.buttons["Show the whole step"].tap()
+        XCTAssertTrue(app.staticTexts["Drink a glass of water"].waitForExistence(timeout: 5))
+    }
+
+    func testSmallerStartCanBeSavedFromTheRun() {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ResetUITestData"]
+        app.launch()
+
+        let template = app.buttons["template.blank"]
+        XCTAssertTrue(template.waitForExistence(timeout: 10))
+        template.tap()
+        let name = app.textFields["Routine name"]
+        XCTAssertTrue(name.waitForExistence(timeout: 5))
+        name.tap()
+        name.typeText("Laundry")
+        let step = app.textFields["Step 1 name"]
+        step.tap()
+        step.typeText("Fold the clothes")
+        saveRoutine(app)
+
+        XCTAssertTrue(app.buttons["Start routine"].waitForExistence(timeout: 5))
+        app.buttons["Start routine"].tap()
+        XCTAssertTrue(app.buttons["run.stuck"].waitForExistence(timeout: 5))
+        app.buttons["run.stuck"].tap()
+        XCTAssertTrue(app.staticTexts["Do ten seconds of it"].waitForExistence(timeout: 5))
+        app.buttons["Save a smaller start"].tap()
+        let field = app.alerts.textFields.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        field.typeText("Pick up one shirt")
+        app.alerts.buttons["Save"].tap()
+        XCTAssertTrue(app.staticTexts["Pick up one shirt"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Save a smaller start"].exists)
+    }
+
     /// The template runs on weekdays. Add today so the test does not depend on the day it runs.
     private func pickMorningTemplateScheduledToday(_ app: XCUIApplication) {
         let template = app.buttons["template.morning"]

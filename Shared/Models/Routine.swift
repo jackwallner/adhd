@@ -7,19 +7,23 @@ struct RoutineStep: Codable, Hashable, Identifiable, Sendable {
     var estimateMinutes: Int
     /// Optional steps are left out of the short version of a routine.
     var isOptional: Bool
+    /// A tiny first action that gets the step going, shown when the user is stuck.
+    var smallestStart: String?
 
     init(
         id: UUID = UUID(),
         name: String,
         details: String? = nil,
         estimateMinutes: Int = 5,
-        isOptional: Bool = false
+        isOptional: Bool = false,
+        smallestStart: String? = nil
     ) {
         self.id = id
         self.name = name
         self.details = details
         self.estimateMinutes = max(1, estimateMinutes)
         self.isOptional = isOptional
+        self.smallestStart = smallestStart
     }
 
     init(from decoder: Decoder) throws {
@@ -29,6 +33,13 @@ struct RoutineStep: Codable, Hashable, Identifiable, Sendable {
         details = try container.decodeIfPresent(String.self, forKey: .details)
         estimateMinutes = max(1, try container.decode(Int.self, forKey: .estimateMinutes))
         isOptional = try container.decodeIfPresent(Bool.self, forKey: .isOptional) ?? false
+        smallestStart = try container.decodeIfPresent(String.self, forKey: .smallestStart)
+    }
+
+    /// The smallest start with blank text treated as none.
+    var startCue: String? {
+        let trimmed = smallestStart?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return trimmed.isEmpty ? nil : trimmed
     }
 }
 
