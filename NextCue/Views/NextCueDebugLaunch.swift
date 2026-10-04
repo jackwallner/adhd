@@ -58,7 +58,8 @@ enum NextCueDebugLaunch {
     static func prepare(routines: RoutineStore) {
         #if DEBUG
         guard needsPreparation else { return }
-        if routines.routines.isEmpty {
+        // "templates" shows the first-launch picker, so it skips the sample routines.
+        if routines.routines.isEmpty && screen != "templates" {
             seed(routines: routines, includeSecondRoutine: screen != "complete")
         }
         guard let routine = routines.routines.first else { return }

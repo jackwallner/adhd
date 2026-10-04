@@ -35,8 +35,8 @@
         "source": "raw/04-editor.png"
       },
       {
-        "claim": "The paused run keeps the current step available with a clear resume action.",
-        "source": "raw/05-paused.png"
+        "claim": "First launch lists templates including Start a dreaded task.",
+        "source": "raw/05-templates.png"
       },
       {
         "claim": "The completion screen confirms the finished routine without a streak count.",
@@ -144,18 +144,18 @@
         "launch_timeout": 150
       },
       {
-        "id": "paused",
+        "id": "templates",
         "launch_args": [
           "-Screen",
-          "paused"
+          "templates"
         ],
         "ready_labels": [
-          "Paused. Your place is saved.",
-          "Resume"
+          "Morning start",
+          "Start a dreaded task"
         ],
         "screenshots": [
           {
-            "name": "05-paused.png"
+            "name": "05-templates.png"
           }
         ],
         "ready_timeout": 90,
@@ -325,24 +325,25 @@
           }
         },
         {
-          "filename": "05-pick-up-again-after-a-pause.png",
-          "header": "Pick up again after a pause",
+          "filename": "05-start-from-a-ready-made-routine.png",
+          "header": "Start from a ready-made routine",
           "story_role": "support",
-          "story_focus": "pick up again",
+          "story_focus": "a ready-made routine",
           "pitch": {
-            "benefit": "Return to the same step after an interruption",
-            "problem": "An interruption can make it hard to find where a routine left off.",
-            "advantage": "A paused run keeps the current step and a clear resume action.",
-            "header_problem": "losing your place",
-            "header_advantage": "your place saved",
+            "benefit": "Begin in seconds with a routine built for starting",
+            "problem": "Building a routine from scratch is its own hard task to start.",
+            "advantage": "First launch offers morning, work, dreaded task, and evening templates with smallest starts filled in.",
+            "header_problem": "a blank page",
+            "header_advantage": "ready-made routines",
             "search_terms": [
-              "ADHD routine app"
+              "ADHD routine app",
+              "routine templates"
             ],
-            "proof": "The real paused run screen shows Paused. Your place is saved. and Resume."
+            "proof": "The real first-launch screen lists Morning start, Start work, Start a dreaded task, Evening reset, and Start from scratch."
           },
-          "source": "raw/05-paused.png",
-          "source_evidence": "raw/05-paused.png",
-          "capture_flow": "paused",
+          "source": "raw/05-templates.png",
+          "source_evidence": "raw/05-templates.png",
+          "capture_flow": "templates",
           "evidence_status": "canonical",
           "device": "iphone",
           "layout": {
