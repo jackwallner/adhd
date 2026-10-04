@@ -71,9 +71,12 @@ enum NextCueDebugLaunch {
             if routines.activeRun == nil { _ = routines.startRun(routineID: routine.id) }
             if routines.activeRun?.isPaused == false { _ = routines.pauseRun() }
         case "complete":
-            if routines.activeRun == nil { _ = routines.startRun(routineID: routine.id) }
-            while routines.activeRun != nil {
-                guard routines.completeCurrentStep() else { break }
+            // Each step takes its estimate, so the finish screen shows a believable active time.
+            var stepEnd = Date.now.addingTimeInterval(-TimeInterval(routine.estimatedMinutes * 60))
+            if routines.activeRun == nil { _ = routines.startRun(routineID: routine.id, now: stepEnd) }
+            while let step = routines.activeRun?.currentStep {
+                stepEnd = min(stepEnd.addingTimeInterval(TimeInterval(step.estimateMinutes * 60)), .now)
+                guard routines.completeCurrentStep(now: stepEnd) else { break }
             }
         default:
             break
