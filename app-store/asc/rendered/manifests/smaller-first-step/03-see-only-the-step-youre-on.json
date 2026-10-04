@@ -1,0 +1,70 @@
+{
+  "filename": "03-see-only-the-step-youre-on.png",
+  "path": "smaller-first-step/03-see-only-the-step-youre-on.png",
+  "output_sha256": "d64f27a984bb9d498585b8732fbd1946c8c741400494455902969063be746caa",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "See only the step you\u2019re on",
+  "pitch": {
+    "benefit": "Follow your routine without scanning a whole list",
+    "problem": "A checklist still leaves a person choosing what to do now.",
+    "advantage": "The run screen shows one current step, a count-up timer, and I'm stuck.",
+    "header_problem": "choosing from a checklist",
+    "header_advantage": "one current step",
+    "search_terms": [
+      "step by step routine",
+      "morning routine planner"
+    ],
+    "proof": "The real run screen shows Get out of bed, a count-up timer, I'm stuck, and Done."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/raw/03-run.png",
+  "source_sha256": "0bbe73423efa30035495ff28b64c3ad750eae1fd6db1928f972919d3c3f096fc",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/smaller-first-step/03-see-only-the-step-youre-on.foreground.png",
+  "foreground_sha256": "4f07e3da04900e17862f2d1225e2fe77aa24cc2f0e6beedf284d4e0ddf061d52",
+  "ui_mask": "manifests/smaller-first-step/03-see-only-the-step-youre-on.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "See only the step you\u2019re on",
+  "header_bounds": [
+    174,
+    158,
+    1145,
+    473
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/raw/03-run.png",
+  "source_evidence_sha256": "0bbe73423efa30035495ff28b64c3ad750eae1fd6db1928f972919d3c3f096fc"
+}

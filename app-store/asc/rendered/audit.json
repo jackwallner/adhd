@@ -38,8 +38,8 @@
         "source": "raw/04-editor.png"
       },
       {
-        "claim": "The paused run keeps the current step available with a clear resume action.",
-        "source": "raw/05-paused.png"
+        "claim": "First launch lists templates including Start a dreaded task.",
+        "source": "raw/05-templates.png"
       },
       {
         "claim": "The completion screen confirms the finished routine without a streak count.",
@@ -148,12 +148,12 @@
           "story_role": "mechanism",
           "story_focus": "shrink a step",
           "background_id": "theme",
-          "foreground_sha256": "f05a5ca935141193d15710b2a3d43deafe4292ceaefd40aa3bc7815a82d904cd",
+          "foreground_sha256": "8729881d6181d01403b2511f3cfe1e8ef69d67e3784bda34c61f6098c53c93ab",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
           },
-          "thumbnail_ocr": "Shrink a step when you're stuck 9:41 al > i] Morning start aes Sit up and put both feet on the floor Part of \u201cGet out of bed\". Stopping after is allowed.",
+          "thumbnail_ocr": "Shrink a step when you're stuck a oo i] Morning start aes Sit up and put both feet on the floor Part of \u201cGet out of bed\". Stopping after is allowed.",
           "corner_contrast_vs_ink": 9.9
         },
         {
@@ -196,7 +196,7 @@
           "story_role": "proof",
           "story_focus": "only the step you\u2019re on",
           "background_id": "theme",
-          "foreground_sha256": "d42e160c9963b04f1ea5d225dea8bf92bc49a11ccf403edb156bf2dff81961cc",
+          "foreground_sha256": "4f07e3da04900e17862f2d1225e2fe77aa24cc2f0e6beedf284d4e0ddf061d52",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
@@ -244,7 +244,7 @@
           "story_role": "support",
           "story_focus": "a tiny first move",
           "background_id": "theme",
-          "foreground_sha256": "d9e3e1a2be79e71b7c56699e355af4a1ba2c5bbb92b502167436a3f56180f795",
+          "foreground_sha256": "0646bcf5d48ff22512a9c9a255c74e1a79f6bd9de36acfdb8cf41d1016221451",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
@@ -253,23 +253,24 @@
           "corner_contrast_vs_ink": 9.9
         },
         {
-          "filename": "05-pick-up-again-after-a-pause.png",
-          "path": "smaller-first-step/05-pick-up-again-after-a-pause.png",
-          "header": "Pick up again after a pause",
+          "filename": "05-pick-a-routine-ready-to-go.png",
+          "path": "smaller-first-step/05-pick-a-routine-ready-to-go.png",
+          "header": "Pick a routine ready to go",
           "pitch": {
-            "benefit": "Return to the same step after an interruption",
-            "problem": "An interruption can make it hard to find where a routine left off.",
-            "advantage": "A paused run keeps the current step and a clear resume action.",
-            "header_problem": "losing your place",
-            "header_advantage": "your place saved",
+            "benefit": "Begin in seconds with a routine built for starting",
+            "problem": "Building a routine from scratch is its own hard task to start.",
+            "advantage": "First launch offers morning, work, dreaded task, and evening templates with smallest starts filled in.",
+            "header_problem": "a blank page",
+            "header_advantage": "ready-made routines",
             "search_terms": [
-              "ADHD routine app"
+              "ADHD routine app",
+              "routine templates"
             ],
-            "proof": "The real paused run screen shows Paused. Your place is saved. and Resume."
+            "proof": "The real first-launch screen lists Morning start, Start work, Start a dreaded task, Evening reset, and Start from scratch."
           },
-          "capture_flow": "paused",
+          "capture_flow": "templates",
           "evidence_status": "canonical",
-          "benefit": "Return to the same step after an interruption",
+          "benefit": "Begin in seconds with a routine built for starting",
           "generic_header_terms": [],
           "size": [
             1320,
@@ -283,20 +284,20 @@
           "header_font_size": 164,
           "header_lines": 2,
           "header_bounds": [
-            205,
+            201,
             158,
-            1115,
-            471
+            1119,
+            473
           ],
           "story_role": "support",
-          "story_focus": "pick up again",
+          "story_focus": "a routine ready to go",
           "background_id": "theme",
-          "foreground_sha256": "1043088809608f316e01a1b159332f3f23db4ca2d9bc8e41ed70d157e82127b2",
+          "foreground_sha256": "cd37828f75651d05246022ca44c423638d275dd8b0d16af0279c99095de85df7",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
           },
-          "thumbnail_ocr": "Pick up again after a pause 9:41 rl) al > x Morning start aes Get out of bed",
+          "thumbnail_ocr": "9:41 al > & One step ata time. #5 6 steps - about 28 min Start work 2 6 steps - about 21 mit eens G 5 steps - about 18 min Start from scratch TD) ula your own, one step at atime",
           "corner_contrast_vs_ink": 9.9
         },
         {
@@ -338,7 +339,7 @@
           "story_role": "support",
           "story_focus": "without streaks or guilt",
           "background_id": "theme",
-          "foreground_sha256": "71eae5e7c4b070dbe49cb64661717ded5bfb0e598667aadab3439f12cd4a86dd",
+          "foreground_sha256": "7c527bdbc9b8720aa55fd9a0849c9b89a94e68d0159454101c02d901a27184fe",
           "background_contrast": {
             "top": 10.25,
             "bottom": 9.57
@@ -349,14 +350,16 @@
       ],
       "errors": [],
       "warnings": [
-        "04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']"
+        "04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']",
+        "05-pick-a-routine-ready-to-go.png: thumbnail OCR missed header words ['pick', 'routine', 'ready']"
       ],
       "status": "pass"
     }
   ],
   "errors": [],
   "warnings": [
-    "smaller-first-step: 04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']"
+    "smaller-first-step: 04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']",
+    "smaller-first-step: 05-pick-a-routine-ready-to-go.png: thumbnail OCR missed header words ['pick', 'routine', 'ready']"
   ],
   "release_requested": true,
   "release_ready": true,

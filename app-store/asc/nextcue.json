@@ -325,10 +325,10 @@
           }
         },
         {
-          "filename": "05-start-from-a-ready-made-routine.png",
-          "header": "Start from a ready-made routine",
+          "filename": "05-pick-a-routine-ready-to-go.png",
+          "header": "Pick a routine ready to go",
           "story_role": "support",
-          "story_focus": "a ready-made routine",
+          "story_focus": "a routine ready to go",
           "pitch": {
             "benefit": "Begin in seconds with a routine built for starting",
             "problem": "Building a routine from scratch is its own hard task to start.",

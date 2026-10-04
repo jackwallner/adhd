@@ -1,0 +1,69 @@
+{
+  "filename": "06-finish-without-streaks-or-guilt.png",
+  "path": "smaller-first-step/06-finish-without-streaks-or-guilt.png",
+  "output_sha256": "cea0d1074c8d7d373fa6095ffbbd3ef669b5607425c1260aa7f21f445bf2471e",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Finish without streaks or guilt",
+  "pitch": {
+    "benefit": "Feel done without a streak to protect",
+    "problem": "Streak apps can turn a missed day into a reason to quit.",
+    "advantage": "The finish screen confirms what you did with no streak count.",
+    "header_problem": "streak pressure",
+    "header_advantage": "a calm finish",
+    "search_terms": [
+      "habit tracker without streaks"
+    ],
+    "proof": "The real completion screen shows That's a wrap with steps done and active time."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/raw/06-complete.png",
+  "source_sha256": "419d2bb20651870cd8f7c10b20c2dda342bb22a7b74480aa9345976b4674736a",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/smaller-first-step/06-finish-without-streaks-or-guilt.foreground.png",
+  "foreground_sha256": "7c527bdbc9b8720aa55fd9a0849c9b89a94e68d0159454101c02d901a27184fe",
+  "ui_mask": "manifests/smaller-first-step/06-finish-without-streaks-or-guilt.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "Finish without streaks or guilt",
+  "header_bounds": [
+    162,
+    158,
+    1158,
+    473
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/raw/06-complete.png",
+  "source_evidence_sha256": "419d2bb20651870cd8f7c10b20c2dda342bb22a7b74480aa9345976b4674736a"
+}

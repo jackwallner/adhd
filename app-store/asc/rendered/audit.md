@@ -10,6 +10,7 @@ This report combines file-spec checks with an independent thumbnail and OCR pass
 ## Warnings
 
 - smaller-first-step: 04-give-every-step-a-tiny-first-move.png: thumbnail OCR missed header words ['give', 'every', 'tiny', 'first', 'move']
+- smaller-first-step: 05-pick-a-routine-ready-to-go.png: thumbnail OCR missed header words ['pick', 'routine', 'ready']
 
 ## Market brief
 

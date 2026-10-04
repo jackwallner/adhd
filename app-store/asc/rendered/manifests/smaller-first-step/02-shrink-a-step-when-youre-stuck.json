@@ -1,0 +1,70 @@
+{
+  "filename": "02-shrink-a-step-when-youre-stuck.png",
+  "path": "smaller-first-step/02-shrink-a-step-when-youre-stuck.png",
+  "output_sha256": "3d39047bdbfb13d698ef361bea496fdee7657299d80ac7427661a4ed2dcb4a2d",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Shrink a step when you\u2019re stuck",
+  "pitch": {
+    "benefit": "Turn a frozen moment into one tiny move you can do now",
+    "problem": "Knowing the step does not make starting it easier.",
+    "advantage": "I'm stuck swaps the step for its smallest start, then I started brings the whole step back.",
+    "header_problem": "freezing before a step",
+    "header_advantage": "a tiny first move",
+    "search_terms": [
+      "procrastination help",
+      "task initiation"
+    ],
+    "proof": "The real run screen in stuck mode shows JUST THIS, Sit up and put both feet on the floor, and I started."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/raw/02-stuck.png",
+  "source_sha256": "f9ac1cc0666d365d6ddb9725ce0670389c63345a31a2dad066a5ef5eb4dd004b",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/smaller-first-step/02-shrink-a-step-when-youre-stuck.foreground.png",
+  "foreground_sha256": "8729881d6181d01403b2511f3cfe1e8ef69d67e3784bda34c61f6098c53c93ab",
+  "ui_mask": "manifests/smaller-first-step/02-shrink-a-step-when-youre-stuck.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 140,
+  "header_lines": 2,
+  "header_text": "Shrink a step when you\u2019re stuck",
+  "header_bounds": [
+    127,
+    153,
+    1193,
+    420
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/raw/02-stuck.png",
+  "source_evidence_sha256": "f9ac1cc0666d365d6ddb9725ce0670389c63345a31a2dad066a5ef5eb4dd004b"
+}

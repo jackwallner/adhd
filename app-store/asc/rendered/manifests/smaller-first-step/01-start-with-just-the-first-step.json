@@ -1,0 +1,70 @@
+{
+  "filename": "01-start-with-just-the-first-step.png",
+  "path": "smaller-first-step/01-start-with-just-the-first-step.png",
+  "output_sha256": "7e858032aef8f2c162389378270288c03bebf631e42eaa9aca9c346fe6bb376d",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Start with just the first step",
+  "pitch": {
+    "benefit": "Know the one action that starts your routine right now",
+    "problem": "A whole routine can feel like too much to begin.",
+    "advantage": "Today names only the first step, plus an even smaller way in.",
+    "header_problem": "a routine that feels too big",
+    "header_advantage": "one first step",
+    "search_terms": [
+      "ADHD routine app",
+      "task initiation"
+    ],
+    "proof": "The real Today screen shows Evening reset with its first step and Even smaller: Pick a shirt."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/raw/01-home.png",
+  "source_sha256": "a5f8f9e2af330b866fae08f0989034c1957b0441c328711cfd70ec8a08d656fe",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/smaller-first-step/01-start-with-just-the-first-step.foreground.png",
+  "foreground_sha256": "fc537fb0573a4a5a98fd44e86d104afed3b48c2456b489483aeff55e0067e16a",
+  "ui_mask": "manifests/smaller-first-step/01-start-with-just-the-first-step.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "Start with just the first step",
+  "header_bounds": [
+    194,
+    158,
+    1126,
+    471
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/raw/01-home.png",
+  "source_evidence_sha256": "a5f8f9e2af330b866fae08f0989034c1957b0441c328711cfd70ec8a08d656fe"
+}

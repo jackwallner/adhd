@@ -1,0 +1,70 @@
+{
+  "filename": "04-give-every-step-a-tiny-first-move.png",
+  "path": "smaller-first-step/04-give-every-step-a-tiny-first-move.png",
+  "output_sha256": "0add509b84c482bebc637b199ef41c479c2696ab8c580235a7934a1bfed9e591",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Give every step a tiny first move",
+  "pitch": {
+    "benefit": "Have a ready-made way in for every step",
+    "problem": "Users rarely know a smaller version when they are already stuck.",
+    "advantage": "Templates fill in a smallest start for each step, and every one is editable.",
+    "header_problem": "no plan for getting unstuck",
+    "header_advantage": "smallest starts filled in",
+    "search_terms": [
+      "executive function planner",
+      "routine planner"
+    ],
+    "proof": "The real editor shows Morning start with a smallest start under each step."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/raw/04-editor.png",
+  "source_sha256": "f2a802cf48720fa22dad9297cc2888c0e86372fed17b7fd9eee9b9c87f3464ae",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/smaller-first-step/04-give-every-step-a-tiny-first-move.foreground.png",
+  "foreground_sha256": "0646bcf5d48ff22512a9c9a255c74e1a79f6bd9de36acfdb8cf41d1016221451",
+  "ui_mask": "manifests/smaller-first-step/04-give-every-step-a-tiny-first-move.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "Give every step a tiny first move",
+  "header_bounds": [
+    123,
+    158,
+    1197,
+    473
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/raw/04-editor.png",
+  "source_evidence_sha256": "f2a802cf48720fa22dad9297cc2888c0e86372fed17b7fd9eee9b9c87f3464ae"
+}

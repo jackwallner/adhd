@@ -1,0 +1,70 @@
+{
+  "filename": "05-pick-a-routine-ready-to-go.png",
+  "path": "smaller-first-step/05-pick-a-routine-ready-to-go.png",
+  "output_sha256": "7c7f0274e06cef8b7249a193f2ff45b149d7f6763ada712d03faba1883c1c489",
+  "output_size": [
+    1320,
+    2868
+  ],
+  "device": "iphone",
+  "header": "Pick a routine ready to go",
+  "pitch": {
+    "benefit": "Begin in seconds with a routine built for starting",
+    "problem": "Building a routine from scratch is its own hard task to start.",
+    "advantage": "First launch offers morning, work, dreaded task, and evening templates with smallest starts filled in.",
+    "header_problem": "a blank page",
+    "header_advantage": "ready-made routines",
+    "search_terms": [
+      "ADHD routine app",
+      "routine templates"
+    ],
+    "proof": "The real first-launch screen lists Morning start, Start work, Start a dreaded task, Evening reset, and Start from scratch."
+  },
+  "source": "/Users/jackwallner/adhd/app-store/asc/raw/05-templates.png",
+  "source_sha256": "85ecce003e6f32aa205eda2c70bcac6e546f2561ad9c8e43de8247ef32da7c35",
+  "background_asset": null,
+  "background_asset_sha256": null,
+  "background_override": null,
+  "foreground": "manifests/smaller-first-step/05-pick-a-routine-ready-to-go.foreground.png",
+  "foreground_sha256": "cd37828f75651d05246022ca44c423638d275dd8b0d16af0279c99095de85df7",
+  "ui_mask": "manifests/smaller-first-step/05-pick-a-routine-ready-to-go.ui-mask.png",
+  "ui_coverage": 0.6066,
+  "imagegen_received_ui_source": false,
+  "target": "iphone_69",
+  "size": [
+    1320,
+    2868
+  ],
+  "background_mode": "theme",
+  "background_id": "theme",
+  "background_top": "#F4F1E8",
+  "background_bottom": "#E5EBE6",
+  "background_asset_applied": false,
+  "phone": {
+    "x": 126,
+    "y": 560,
+    "width": 1067,
+    "height": 2273,
+    "screen_x": 146,
+    "screen_y": 580,
+    "screen_width": 1027,
+    "screen_height": 2233,
+    "source_crop_top": 0,
+    "source_crop_bottom": 0
+  },
+  "header_only": true,
+  "compositor_text_layers": [
+    "header"
+  ],
+  "header_font_size": 164,
+  "header_lines": 2,
+  "header_text": "Pick a routine ready to go",
+  "header_bounds": [
+    201,
+    158,
+    1119,
+    473
+  ],
+  "source_evidence": "/Users/jackwallner/adhd/app-store/asc/raw/05-templates.png",
+  "source_evidence_sha256": "85ecce003e6f32aa205eda2c70bcac6e546f2561ad9c8e43de8247ef32da7c35"
+}
