@@ -16,6 +16,7 @@ struct RoutineRunView: View {
     @State private var showNewRoutine = false
     @State private var wantsNewRoutine = false
     @State private var toast: RunToast?
+    @State private var headerHeight: CGFloat = 0
     @State private var doneCount = 0
     @State private var moveCount = 0
     /// The step shrunk to its smallest start. Matching by ID clears it as soon as the step changes.
@@ -135,6 +136,7 @@ struct RoutineRunView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         runHeader(run)
+                            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
                         Spacer(minLength: 32)
                         stepFocus(run: run, step: step)
                         Spacer(minLength: 32)
@@ -144,18 +146,18 @@ struct RoutineRunView: View {
                     .padding(.top, 6)
                     .padding(.bottom, 14)
                     .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .top)
+                    // The toast sits just below the progress header, so it hides neither the progress nor the next step card.
+                    .overlay(alignment: .top) {
+                        if let toast {
+                            ToastView(toast: toast) { perform(.back) }
+                                .padding(.top, 6 + headerHeight + 14)
+                                .transition(.move(edge: .top).combined(with: .opacity))
+                        }
+                    }
                 }
                 .scrollBounceBehavior(.basedOnSize)
             }
             .safeAreaInset(edge: .bottom, spacing: 0) { controls(run) }
-            // The toast sits at the top so it never hides the next step card.
-            .overlay(alignment: .top) {
-                if let toast {
-                    ToastView(toast: toast) { perform(.back) }
-                        .padding(.top, 4)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-            }
         } else {
             VStack(spacing: 18) {
                 Text("You’ve reached the end")

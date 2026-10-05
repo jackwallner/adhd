@@ -41,10 +41,8 @@ struct NextCuePaywallView: View {
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    VStack(spacing: 12) {
-                        NextCueBenefit(symbol: "list.bullet.rectangle", title: "Unlimited routines", detail: "Create a separate routine for mornings, work, evenings, and more.")
-                        NextCueBenefit(symbol: "calendar.badge.clock", title: "A schedule for every routine", detail: "Set different days and reminder times as your week changes.")
-                    }
+                    // One benefit row keeps all three plans on screen above the purchase footer.
+                    NextCueBenefit(symbol: "list.bullet.rectangle", title: "Unlimited routines", detail: "Mornings, work, evenings, a task you dread. Each gets its own days and reminder time.")
 
                     VStack(spacing: 10) {
                         if let yearly = purchases.yearly {

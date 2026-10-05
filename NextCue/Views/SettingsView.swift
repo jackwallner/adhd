@@ -8,7 +8,6 @@ struct SettingsView: View {
     @EnvironmentObject private var purchases: StoreService
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
-    @Environment(\.requestReview) private var requestReview
 
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
     @State private var showPaywall = false
@@ -152,7 +151,7 @@ struct SettingsView: View {
 
     private var feedbackSection: some View {
         Section("Feedback") {
-            Button("Rate Next Cue") { requestReview() }
+            Link("Rate Next Cue", destination: NextCueLinks.writeReview)
             Link("Send feedback", destination: NextCueLinks.feedback)
             Link("Help and support", destination: NextCueLinks.support)
         }
@@ -198,5 +197,6 @@ enum NextCueLinks {
     static let terms = URL(string: "https://jackwallner.github.io/adhd/terms.html")!
     static let eula = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
     static let appleSubscriptions = URL(string: "https://apps.apple.com/account/subscriptions")!
+    static let writeReview = URL(string: "https://apps.apple.com/app/id6815023447?action=write-review")!
     static let feedback = URL(string: "mailto:jackwallner@gmail.com?subject=Next%20Cue%20feedback")!
 }
