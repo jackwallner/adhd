@@ -1,3 +1,4 @@
+import StoreKit
 import SwiftUI
 import UIKit
 
@@ -7,6 +8,8 @@ struct NextCueRootView: View {
     @EnvironmentObject private var router: NextCueRouter
     @State private var launchPrepared = !NextCueDebugLaunch.needsPreparation
     @State private var showPaywallSnapshot = false
+    @State private var reviewTask: Task<Void, Never>?
+    @Environment(\.requestReview) private var requestReview
 
     var body: some View {
         Group {
@@ -31,11 +34,38 @@ struct NextCueRootView: View {
             if NextCueDebugLaunch.isPaywallSnapshot { showPaywallSnapshot = true }
         }
         .sheet(isPresented: $showPaywallSnapshot) { NextCuePaywallView() }
-        .fullScreenCover(isPresented: $router.showRun) { RoutineRunView() }
+        .fullScreenCover(isPresented: $router.showRun, onDismiss: scheduleReviewRequestAfterPositiveMoment) {
+            RoutineRunView()
+        }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             routines.refreshReminders()
             purchases.start()
         }
+    }
+
+    /// The rating ask after a finished routine: Apple's own prompt, no question
+    /// in front of it. Waits for Home to settle, then asks only if nothing is
+    /// presented. A blocked ask keeps the moment pending for the next finish.
+    private func scheduleReviewRequestAfterPositiveMoment() {
+        guard ReviewPromptTracker.hasPendingPositiveMoment else { return }
+        reviewTask?.cancel()
+        reviewTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 3_000_000_000)
+            guard !Task.isCancelled, isHomeClear,
+                  ReviewPromptTracker.shouldRequestAfterPositiveMoment(hasCompletedSetup: !routines.routines.isEmpty)
+            else { return }
+            ReviewPromptTracker.markShown()
+            requestReview()
+        }
+    }
+
+    /// No run, sheet, paywall or alert is up over Home.
+    private var isHomeClear: Bool {
+        guard !router.showRun, !showPaywallSnapshot, UIApplication.shared.applicationState == .active else { return false }
+        return !UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap(\.windows)
+            .contains { $0.isKeyWindow && $0.rootViewController?.presentedViewController != nil }
     }
 }
 

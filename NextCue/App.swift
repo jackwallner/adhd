@@ -16,6 +16,7 @@ struct NextCueApp: App {
         if shouldReset { storeService.setLocalOverride(isPro: false) }
         #endif
         _purchases = StateObject(wrappedValue: storeService)
+        ReviewPromptTracker.recordAppLaunch()
     }
 
     var body: some Scene {
@@ -38,7 +39,6 @@ struct NextCueApp: App {
             .appendingPathComponent("NextCue", isDirectory: true)
             .appendingPathComponent("nextcue-state.json")
         try? FileManager.default.removeItem(at: snapshotURL)
-        UserDefaults.standard.removeObject(forKey: "nextcue.reviewPromptHandled")
         return true
         #else
         return false

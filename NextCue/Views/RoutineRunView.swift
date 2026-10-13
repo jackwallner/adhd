@@ -5,8 +5,6 @@ struct RoutineRunView: View {
     @EnvironmentObject private var routines: RoutineStore
     @EnvironmentObject private var purchases: StoreService
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.requestReview) private var requestReview
-    @Environment(\.openURL) private var openURL
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var trackedRunID: UUID?
@@ -25,7 +23,8 @@ struct RoutineRunView: View {
     @State private var startedStepID: UUID?
     @State private var showSmallestPrompt = false
     @State private var smallestDraft = ""
-    @AppStorage("nextcue.reviewPromptHandled") private var reviewPromptHandled = false
+    /// A finish that led to the paywall is not a rating moment.
+    @State private var showedPaywallAfterFinish = false
     @AppStorage(NextCuePreferences.stepTimerKey) private var showsStepTimer = true
     @AppStorage(NextCuePreferences.keepAwakeKey) private var keepsScreenAwake = true
     @ScaledMetric(relativeTo: .largeTitle) private var stepTitleSize: CGFloat = 40
@@ -454,6 +453,7 @@ struct RoutineRunView: View {
                                 .foregroundStyle(NextCueStyle.secondary)
                             Button("Add another routine") {
                                 wantsNewRoutine = true
+                                showedPaywallAfterFinish = true
                                 showPaywall = true
                             }
                             .font(.subheadline.weight(.semibold))
@@ -461,8 +461,6 @@ struct RoutineRunView: View {
                             .padding(.top, 2)
                         }
                     }
-                } else if completion.isComplete && routines.completions.count >= 2 && !reviewPromptHandled {
-                    reviewPrompt
                 }
             }
             .padding(.horizontal, 22)
@@ -471,7 +469,7 @@ struct RoutineRunView: View {
         }
         .scrollBounceBehavior(.basedOnSize)
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            Button("Done") { dismiss() }
+            Button("Done") { closeFinished(completion) }
                 .buttonStyle(NextCuePrimaryButtonStyle(height: 62))
                 .padding(.horizontal, 18)
                 .padding(.top, 10)
@@ -519,29 +517,13 @@ struct RoutineRunView: View {
         .padding(24)
     }
 
-    private var reviewPrompt: some View {
-        NextCueCard(padding: 16) {
-            VStack(alignment: .leading, spacing: 9) {
-                Text("Is Next Cue helping your day?")
-                    .font(.system(.headline, design: .rounded).weight(.bold))
-                    .foregroundStyle(NextCueStyle.ink)
-                Button("Yes, I’d like to rate it") {
-                    reviewPromptHandled = true
-                    requestReview()
-                }
-                .font(.subheadline.weight(.semibold))
-                .foregroundStyle(NextCueStyle.accent)
-                Button("Send feedback") {
-                    reviewPromptHandled = true
-                    openURL(NextCueLinks.feedback)
-                }
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(NextCueStyle.secondary)
-                Button("Maybe later") { reviewPromptHandled = true }
-                    .font(.subheadline.weight(.medium))
-                    .foregroundStyle(NextCueStyle.secondary)
-            }
+    /// A routine done in full is the app's positive moment. Home asks for a
+    /// rating once this screen is gone (`NextCueRootView`).
+    private func closeFinished(_ completion: RoutineCompletion) {
+        if completion.isComplete && !showedPaywallAfterFinish {
+            ReviewPromptTracker.recordPositiveMoment()
         }
+        dismiss()
     }
 
     // MARK: Actions

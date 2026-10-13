@@ -150,9 +150,17 @@ struct SettingsView: View {
     }
 
     private var feedbackSection: some View {
+        // Separate rating and feedback rows, with no question in front of
+        // either (App Review 5.6.1).
         Section("Feedback") {
-            Link("Rate Next Cue", destination: NextCueLinks.writeReview)
-            Link("Send feedback", destination: NextCueLinks.feedback)
+            Button("Rate Next Cue") {
+                ReviewPromptTracker.markOpenedWriteReview()
+                openURL(NextCueLinks.writeReview)
+            }
+            Button("Send feedback") {
+                ReviewPromptTracker.markFeedbackSubmitted()
+                openURL(NextCueLinks.feedback)
+            }
             Link("Help and support", destination: NextCueLinks.support)
         }
     }

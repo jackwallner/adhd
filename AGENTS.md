@@ -16,6 +16,7 @@ An ADHD routine companion that helps people plan daily steps and see what to do 
 - `NextCue.storekit` is attached to the app scheme for local purchase testing. Simulator builds must return before configuring RevenueCat with the production key.
 - Next Cue is an organization and routine planning tool. Do not claim that it diagnoses, treats, or manages ADHD or other medical conditions.
 - Keep the privacy policy aligned with the app's actual storage and SDK behavior.
+- Ratings: no in-app rating question (App Review 5.6.1). Finishing a routine in full (Done on the finish screen, no paywall opened from it) records a positive moment; when the run cover closes, `NextCueRootView` calls the system `requestReview()` about 3s later if nothing is presented (from the 2nd launch, 30-day cooldown; `ReviewPromptTracker`). A blocked ask stays pending. Settings has separate "Rate Next Cue" and "Send feedback" rows.
 
 ## Rules index
 
