@@ -24,6 +24,7 @@ paths:
   `closePane` environment action when it is set, else `dismiss`. The run
   closes through `router.showRun = false` in both poses, and the rating ask
   hangs off that change in `NextCueRootView`.
-- Captures: DEBUG `nextcue://debug/run|stuck|paused|complete` opens a fresh
-  run in that state, so one `gh-sim all --device 'iPhone Duo' --args
-  -SeedScreenshotData --url ...` job shoots every state folded and unfolded.
+- Captures: DEBUG `-CaptureTour` walks a fresh run through run, paused,
+  finish and stuck (8 s each) and stays on stuck. `simctl openurl` prompts
+  "Open in Next Cue?", so no URL routes. gh-sim shoots one state per pose per
+  job; use `-Screen <name>` launches for the other PNGs.

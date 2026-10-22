@@ -89,22 +89,26 @@ enum NextCueDebugLaunch {
     }
 
     #if DEBUG
-    /// The screen a `nextcue://debug/<screen>` link asked for, so one capture
-    /// launch can walk through several run states. Cleared on every launch.
+    /// The screen the capture tour moved to, read by `screen` so each state
+    /// opens as its `-Screen` launch would. Cleared on every launch.
     private static let routeKey = "NextCueDebugRoute"
 
     static func clearRoute() {
         UserDefaults.standard.removeObject(forKey: routeKey)
     }
 
-    /// `nextcue://debug/run`, `stuck`, `paused` or `complete`: a fresh run in
-    /// that state, opened the way a tap would open it.
+    static var runsCaptureTour: Bool { hasArgument("-CaptureTour") }
+
+    /// `-CaptureTour`: one launch walks Home, a run, paused, the finish screen
+    /// and a stuck step, then stays there, so a single capture job records
+    /// every state and screenshots the last. `simctl openurl` asks before
+    /// opening a custom scheme, so links can't drive this.
     @MainActor
-    static func open(_ url: URL, routines: RoutineStore, router: NextCueRouter) {
-        guard url.scheme == "nextcue", url.host() == "debug" else { return }
-        UserDefaults.standard.set(url.lastPathComponent, forKey: routeKey)
-        router.showRun = false
-        Task { @MainActor in
+    static func runCaptureTour(routines: RoutineStore, router: NextCueRouter) async {
+        for screen in ["run", "paused", "complete", "stuck"] {
+            try? await Task.sleep(for: .seconds(8))
+            UserDefaults.standard.set(screen, forKey: routeKey)
+            router.showRun = false
             // Lets the closing run leave before the next one opens.
             try? await Task.sleep(for: .milliseconds(800))
             if routines.activeRun != nil { _ = routines.cancelRun() }

@@ -22,7 +22,7 @@ An ADHD routine companion that helps people plan daily steps and see what to do 
 
 - `.claude/rules/run-experience.md`: product lane, run mechanics, notifications, Live Activity.
 - `.claude/rules/store-and-release.md`: ASC setup scripts, metadata rules, subscription defaults, and release steps.
-- `.claude/rules/iphone-duo.md`: unfolded two-pane layout (Home beside the run), pane closing, Duo capture routes.
+- `.claude/rules/iphone-duo.md`: unfolded two-pane layout (Home beside the run), pane closing, Duo capture tour.
 
 ---
 Shared iOS conventions (build, simulator, release/TestFlight, ASC credentials, signing, and review funnel) are in the global agent rules and the `ios-dev` skill.
