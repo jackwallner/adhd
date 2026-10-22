@@ -36,7 +36,8 @@ add leave-by deadlines, countdowns, or learned step timing here.
   "Back a step" in the run menu; "Undo the last step" on the finish screen.
 - One screen. `HomeView` is the whole app shell, with no tab bar: the lead
   card, the rest of today, then routines for other days. Settings, the
-  editor, new routines, and the paywall are sheets from Home (`HomeSheet`).
+  editor, new routines, and the paywall are sheets from Home (`HomeSheet`),
+  or the trailing pane on the unfolded iPhone Duo (`iphone-duo.md`).
   Tapping a row opens the routine; its play button starts it.
 - First launch is the template list on Home. Picking one opens the editor
   already filled in; `+` opens `NewRoutineSheet`, which asks for a template
