@@ -1,15 +1,76 @@
 import SwiftUI
 
 /// The one screen: what to do now, the rest of today, and every other routine.
+///
+/// Unfolded on iPhone Duo, Home keeps the leading side of the fold and the
+/// trailing side shows the run, or else whatever Home would open as a sheet,
+/// or else the routine up next. Folding only moves frames, so Home keeps its
+/// scroll position.
 struct HomeView: View {
     @EnvironmentObject private var routines: RoutineStore
     @EnvironmentObject private var purchases: StoreService
     @EnvironmentObject private var router: NextCueRouter
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @State private var sheet: HomeSheet?
     @State private var wantsNewRoutine = false
+    @State private var paneGeometry = PaneGeometry(width: 0, fold: nil)
+
+    private var split: UnfoldedSplit? {
+        UnfoldedSplit.make(
+            width: paneGeometry.width,
+            isRegularWidth: horizontalSizeClass == .regular,
+            fold: paneGeometry.fold
+        )
+    }
 
     var body: some View {
+        ZStack(alignment: .topLeading) {
+            home
+                .environment(\.horizontalSizeClass, split == nil ? horizontalSizeClass : .compact)
+                .frame(maxWidth: split?.primaryWidth ?? .infinity, maxHeight: .infinity)
+            if let split {
+                sidePane
+                    .environment(\.horizontalSizeClass, .compact)
+                    .frame(width: split.secondaryWidth)
+                    .frame(maxHeight: .infinity)
+                    .overlay(alignment: .leading) {
+                        Rectangle()
+                            .fill(NextCueStyle.line)
+                            .frame(width: 1)
+                            .ignoresSafeArea()
+                    }
+                    .padding(.leading, split.secondaryX)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .background(NextCueStyle.background.ignoresSafeArea())
+        .onGeometryChange(for: PaneGeometry.self) { proxy in
+            PaneGeometry(width: proxy.size.width, fold: proxy.verticalFold())
+        } action: { paneGeometry = $0 }
+        .fullScreenCover(isPresented: runCover) { RoutineRunView() }
+        .onChange(of: router.todayRequest) { _, _ in sheet = nil }
+        .onAppear(perform: openDebugSheet)
+    }
+
+    /// The run covers Home on a phone; unfolded it has the side pane instead.
+    private var runCover: Binding<Bool> {
+        Binding(
+            get: { router.showRun && split == nil },
+            set: { if !$0 || split == nil { router.showRun = $0 } }
+        )
+    }
+
+    /// A sheet only while folded. Unfolding mid-sheet moves it to the side pane
+    /// rather than closing it.
+    private var presentedSheet: Binding<HomeSheet?> {
+        Binding(
+            get: { split == nil ? sheet : nil },
+            set: { if $0 != nil || split == nil { sheet = $0 } }
+        )
+    }
+
+    private var home: some View {
         NavigationStack {
             TimelineView(.everyMinute) { context in
                 ScrollView {
@@ -29,17 +90,49 @@ struct HomeView: View {
             }
             .background(NextCueStyle.background.ignoresSafeArea())
             .toolbar { toolbar }
-            .sheet(item: $sheet, onDismiss: openEditorAfterPurchase) { sheet in
-                switch sheet {
-                case .newRoutine(let template): NewRoutineSheet(template: template)
-                case .edit(let routine): NavigationStack { RoutineSetupView(routine: routine) }.tint(NextCueStyle.accent)
-                case .paywall: NextCuePaywallView()
-                case .settings: SettingsView()
-                }
+            .sheet(item: presentedSheet, onDismiss: openEditorAfterPurchase) { sheet in
+                screen(for: sheet)
             }
         }
-        .onChange(of: router.todayRequest) { _, _ in sheet = nil }
-        .onAppear(perform: openDebugSheet)
+    }
+
+    @ViewBuilder
+    private func screen(for sheet: HomeSheet) -> some View {
+        switch sheet {
+        case .newRoutine(let template): NewRoutineSheet(template: template)
+        case .edit(let routine): NavigationStack { RoutineSetupView(routine: routine) }.tint(NextCueStyle.accent)
+        case .paywall: NextCuePaywallView()
+        case .settings: SettingsView()
+        }
+    }
+
+    // MARK: Side pane
+
+    @ViewBuilder
+    private var sidePane: some View {
+        if router.showRun {
+            RoutineRunView()
+        } else if let sheet {
+            screen(for: sheet)
+                .id(sheet.id)
+                .environment(\.closePane, { closePane() })
+        } else if let routine = leadRoutine(now: .now) ?? unlockedRoutines.first {
+            NavigationStack { RoutineSetupView(routine: routine, showsCancel: false) }
+                .tint(NextCueStyle.accent)
+                .id(routine)
+        } else {
+            ContentUnavailableView(
+                "Pick a routine",
+                systemImage: "list.bullet",
+                description: Text("Its steps show up here, ready to change.")
+            )
+            .foregroundStyle(NextCueStyle.secondary)
+        }
+    }
+
+    private func closePane() {
+        sheet = nil
+        openEditorAfterPurchase()
     }
 
     @ToolbarContentBuilder
@@ -84,10 +177,8 @@ struct HomeView: View {
     @ViewBuilder
     private func content(now: Date) -> some View {
         let plan = TodayPlan(routines: routines.routines, completions: routines.completions, now: now)
-        let unlockedPlan = TodayPlan(routines: unlockedRoutines, completions: routines.completions, now: now)
-        // On a day with nothing scheduled, the first routine still leads so starting is one tap away.
-        let isOffDay = unlockedPlan.routines.isEmpty
-        let lead = unlockedPlan.upNext ?? (isOffDay ? unlockedRoutines.first { $0.isEnabled } : nil)
+        let offDay = isOffDay(now: now)
+        let lead = leadRoutine(now: now)
         let leadID = routines.activeRun?.routineID ?? lead?.id
         let todayIDs = Set(plan.routines.map(\.id))
         let laterToday = plan.routines.filter { $0.id != leadID }
@@ -101,7 +192,7 @@ struct HomeView: View {
                 .accessibilityAddTraits(.isHeader)
         }
 
-        leadCard(lead: lead, offDay: isOffDay, now: now)
+        leadCard(lead: lead, offDay: offDay, now: now)
             .transition(.opacity.combined(with: .scale(scale: 0.98)))
 
         if !laterToday.isEmpty {
@@ -195,6 +286,17 @@ struct HomeView: View {
     }
 
     // MARK: Actions
+
+    private func isOffDay(now: Date) -> Bool {
+        TodayPlan(routines: unlockedRoutines, completions: routines.completions, now: now).routines.isEmpty
+    }
+
+    /// The routine the Today card leads with.
+    private func leadRoutine(now: Date) -> Routine? {
+        let unlockedPlan = TodayPlan(routines: unlockedRoutines, completions: routines.completions, now: now)
+        // On a day with nothing scheduled, the first routine still leads so starting is one tap away.
+        return unlockedPlan.upNext ?? (isOffDay(now: now) ? unlockedRoutines.first { $0.isEnabled } : nil)
+    }
 
     private var unlockedRoutines: [Routine] {
         routines.routines.filter { !requiresPro($0) }

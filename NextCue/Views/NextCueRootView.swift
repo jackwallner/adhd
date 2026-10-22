@@ -34,9 +34,13 @@ struct NextCueRootView: View {
             if NextCueDebugLaunch.isPaywallSnapshot { showPaywallSnapshot = true }
         }
         .sheet(isPresented: $showPaywallSnapshot) { NextCuePaywallView() }
-        .fullScreenCover(isPresented: $router.showRun, onDismiss: scheduleReviewRequestAfterPositiveMoment) {
-            RoutineRunView()
+        // Home presents the run, as a cover on a phone or beside itself unfolded.
+        .onChange(of: router.showRun) { _, isShown in
+            if !isShown { scheduleReviewRequestAfterPositiveMoment() }
         }
+        #if DEBUG
+        .onOpenURL { NextCueDebugLaunch.open($0, routines: routines, router: router) }
+        #endif
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
             routines.refreshReminders()
             purchases.start()

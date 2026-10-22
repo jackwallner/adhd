@@ -7,6 +7,7 @@ struct SettingsView: View {
     @EnvironmentObject private var routines: RoutineStore
     @EnvironmentObject private var purchases: StoreService
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.closePane) private var closePane
     @Environment(\.openURL) private var openURL
 
     @State private var notificationStatus: UNAuthorizationStatus = .notDetermined
@@ -41,7 +42,7 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                    Button("Done") { if let closePane { closePane() } else { dismiss() } }
                         .fontWeight(.semibold)
                 }
             }

@@ -3,6 +3,7 @@ import SwiftUI
 /// New routines start here: pick a template, then land in the editor with it filled in.
 struct NewRoutineSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.closePane) private var closePane
     @State private var path: [RoutineStarterTemplate] = []
     private let skipsPicker: Bool
     private let initialTemplate: RoutineStarterTemplate
@@ -17,16 +18,21 @@ struct NewRoutineSheet: View {
         NavigationStack(path: $path) {
             Group {
                 if skipsPicker {
-                    RoutineSetupView(template: initialTemplate, onClose: { dismiss() })
+                    RoutineSetupView(template: initialTemplate, onClose: { close() })
                 } else {
                     picker
                 }
             }
             .navigationDestination(for: RoutineStarterTemplate.self) { template in
-                RoutineSetupView(template: template, showsCancel: false, onClose: { dismiss() })
+                RoutineSetupView(template: template, showsCancel: false, onClose: { close() })
             }
         }
         .tint(NextCueStyle.accent)
+    }
+
+    /// Shown in the unfolded side pane, there is no sheet to dismiss.
+    private func close() {
+        if let closePane { closePane() } else { dismiss() }
     }
 
     private var picker: some View {
@@ -47,7 +53,7 @@ struct NewRoutineSheet: View {
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-                Button("Cancel") { dismiss() }
+                Button("Cancel") { close() }
             }
         }
     }

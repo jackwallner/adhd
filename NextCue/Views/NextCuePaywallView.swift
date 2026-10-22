@@ -4,6 +4,7 @@ import SwiftUI
 struct NextCuePaywallView: View {
     @EnvironmentObject private var purchases: StoreService
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.closePane) private var closePane
 
     @State private var selection: NextCuePlan = .yearly
 
@@ -87,7 +88,7 @@ struct NextCuePaywallView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") { dismiss() }
+                    Button("Close") { close() }
                         .accessibilityLabel("Close subscription options")
                 }
             }
@@ -98,10 +99,15 @@ struct NextCuePaywallView: View {
                 purchases.trackPaywallImpression(id: "nextcue_main")
             }
             .onChange(of: purchases.isPro) { _, isPro in
-                if isPro { dismiss() }
+                if isPro { close() }
             }
         }
         .tint(NextCueStyle.accent)
+    }
+
+    /// Shown in the unfolded side pane, there is no sheet to dismiss.
+    private func close() {
+        if let closePane { closePane() } else { dismiss() }
     }
 
     private var purchaseFooter: some View {

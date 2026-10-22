@@ -5,7 +5,9 @@ enum NextCueDebugLaunch {
 
     static var screen: String {
         #if DEBUG
-        value(after: "-Screen") ?? (hasArgument("-PaywallSnapshot") ? "paywall" : "home")
+        UserDefaults.standard.string(forKey: routeKey)
+            ?? value(after: "-Screen")
+            ?? (hasArgument("-PaywallSnapshot") ? "paywall" : "home")
         #else
         "home"
         #endif
@@ -87,6 +89,30 @@ enum NextCueDebugLaunch {
     }
 
     #if DEBUG
+    /// The screen a `nextcue://debug/<screen>` link asked for, so one capture
+    /// launch can walk through several run states. Cleared on every launch.
+    private static let routeKey = "NextCueDebugRoute"
+
+    static func clearRoute() {
+        UserDefaults.standard.removeObject(forKey: routeKey)
+    }
+
+    /// `nextcue://debug/run`, `stuck`, `paused` or `complete`: a fresh run in
+    /// that state, opened the way a tap would open it.
+    @MainActor
+    static func open(_ url: URL, routines: RoutineStore, router: NextCueRouter) {
+        guard url.scheme == "nextcue", url.host() == "debug" else { return }
+        UserDefaults.standard.set(url.lastPathComponent, forKey: routeKey)
+        router.showRun = false
+        Task { @MainActor in
+            // Lets the closing run leave before the next one opens.
+            try? await Task.sleep(for: .milliseconds(800))
+            if routines.activeRun != nil { _ = routines.cancelRun() }
+            prepare(routines: routines)
+            if opensRoutineRun { router.showRun = true }
+        }
+    }
+
     @MainActor
     private static func seed(routines: RoutineStore, includeSecondRoutine: Bool) {
         let morning = Routine(

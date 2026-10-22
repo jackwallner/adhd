@@ -5,6 +5,7 @@ import UserNotifications
 struct RoutineSetupView: View {
     @EnvironmentObject private var routines: RoutineStore
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.closePane) private var closePane
     @Environment(\.openURL) private var openURL
 
     private let routine: Routine?
@@ -25,7 +26,7 @@ struct RoutineSetupView: View {
     @State private var savedCount = 0
     @FocusState private var focus: SetupField?
 
-    init(routine: Routine) {
+    init(routine: Routine, showsCancel: Bool = true) {
         self.init(
             routine: routine,
             name: routine.name,
@@ -34,7 +35,7 @@ struct RoutineSetupView: View {
             hour: routine.schedule.hour,
             minute: routine.schedule.minute,
             weekdays: routine.schedule.weekdays.isEmpty ? [2, 3, 4, 5, 6] : routine.schedule.weekdays,
-            showsCancel: true,
+            showsCancel: showsCancel,
             onClose: nil
         )
     }
@@ -358,7 +359,13 @@ struct RoutineSetupView: View {
     }
 
     private func close() {
-        if let onClose { onClose() } else { dismiss() }
+        if let onClose {
+            onClose()
+        } else if let closePane {
+            closePane()
+        } else {
+            dismiss()
+        }
     }
 
     @MainActor

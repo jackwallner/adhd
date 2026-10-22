@@ -8,6 +8,7 @@ struct NextCueApp: App {
 
     init() {
         #if DEBUG
+        NextCueDebugLaunch.clearRoute()
         let shouldReset = Self.resetUITestDataIfRequested()
         #endif
         _routines = StateObject(wrappedValue: RoutineStore.shared)

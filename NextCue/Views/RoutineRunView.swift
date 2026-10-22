@@ -4,7 +4,7 @@ import UIKit
 struct RoutineRunView: View {
     @EnvironmentObject private var routines: RoutineStore
     @EnvironmentObject private var purchases: StoreService
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var router: NextCueRouter
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var trackedRunID: UUID?
@@ -511,7 +511,7 @@ struct RoutineRunView: View {
             Text("No routine is running")
                 .font(.system(.title2, design: .rounded).weight(.bold))
                 .foregroundStyle(NextCueStyle.ink)
-            Button("Done") { dismiss() }
+            Button("Done") { close() }
                 .buttonStyle(NextCueSecondaryButtonStyle())
         }
         .padding(24)
@@ -523,7 +523,7 @@ struct RoutineRunView: View {
         if completion.isComplete && !showedPaywallAfterFinish {
             ReviewPromptTracker.recordPositiveMoment()
         }
-        dismiss()
+        close()
     }
 
     // MARK: Actions
@@ -610,7 +610,7 @@ struct RoutineRunView: View {
             showRoutineError = true
             return
         }
-        dismiss()
+        close()
     }
 
     private func pauseAndClose() {
@@ -619,7 +619,12 @@ struct RoutineRunView: View {
             showRoutineError = true
             return
         }
-        dismiss()
+        close()
+    }
+
+    /// Closes the cover on a phone, or the side pane on the unfolded Duo.
+    private func close() {
+        router.showRun = false
     }
 
     private func updateIdleTimer() {
