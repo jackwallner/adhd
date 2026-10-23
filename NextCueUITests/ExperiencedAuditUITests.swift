@@ -95,10 +95,15 @@ final class ExperiencedAuditUITests: XCTestCase {
         app.buttons["Pause"].tap()
         XCTAssertTrue(app.buttons["Resume routine"].waitForExistence(timeout: 5))
         let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Morning start, ")).firstMatch
+        let more = app.buttons["More options for Morning start"]
+        guard row.exists || more.exists else {
+            note("Paused routine has no row and no ellipsis menu on Home, so it cannot be edited or deleted without ending the run. Home buttons: \(app.buttons.allElementsBoundByIndex.map(\.label))")
+            return
+        }
         if row.exists {
             row.tap()
         } else {
-            app.buttons["More options for Morning start"].tap()
+            more.tap()
             app.buttons["Edit routine"].tap()
         }
         XCTAssertTrue(app.buttons["setup.save"].waitForExistence(timeout: 5))
@@ -183,7 +188,8 @@ final class ExperiencedAuditUITests: XCTestCase {
         let toggle = app.switches.firstMatch
         XCTAssertTrue(toggle.waitForExistence(timeout: 5))
         scrollTo(toggle, in: app)
-        toggle.tap()
+        flip(toggle)
+        note("Remind me value after turning off: \(toggle.value as? String ?? "?")")
         shot("20-editor-reminder-off")
         saveEditor(app)
         sleep(1)
@@ -194,7 +200,9 @@ final class ExperiencedAuditUITests: XCTestCase {
         let toggleAgain = app.switches.firstMatch
         XCTAssertTrue(toggleAgain.waitForExistence(timeout: 5))
         scrollTo(toggleAgain, in: app)
-        toggleAgain.tap()
+        note("Remind me value on reopen (expect 0): \(toggleAgain.value as? String ?? "?")")
+        flip(toggleAgain)
+        note("Remind me value after turning back on: \(toggleAgain.value as? String ?? "?")")
         sleep(1)
         let states = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map { day -> String in
             let chip = app.buttons[day]
@@ -220,7 +228,8 @@ final class ExperiencedAuditUITests: XCTestCase {
         app.buttons["Settings"].tap()
         let toggle = app.switches["Pro access"]
         scrollTo(toggle, in: app)
-        if toggle.exists && (toggle.value as? String) != "1" { toggle.tap() }
+        if toggle.exists && (toggle.value as? String) != "1" { flip(toggle) }
+        note("Pro access switch value after flip: \(toggle.value as? String ?? "?")")
         app.buttons["Done"].firstMatch.tap()
         _ = app.buttons["Settings"].waitForExistence(timeout: 5)
     }
@@ -246,6 +255,11 @@ final class ExperiencedAuditUITests: XCTestCase {
         let allow = XCUIApplication(bundleIdentifier: "com.apple.springboard").buttons["Allow"]
         if allow.waitForExistence(timeout: 3) { allow.tap() }
         _ = app.buttons["setup.save"].waitForNonExistence(timeout: 5)
+    }
+
+    /// A Form row's centre is its label, so tap the switch at the trailing edge.
+    private func flip(_ toggle: XCUIElement) {
+        toggle.coordinate(withNormalizedOffset: CGVector(dx: 0.92, dy: 0.5)).tap()
     }
 
     private func scrollTo(_ element: XCUIElement, in app: XCUIApplication) {
