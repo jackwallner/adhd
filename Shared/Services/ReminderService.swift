@@ -148,16 +148,23 @@ final class ReminderService: NSObject, ReminderScheduling, UNUserNotificationCen
         notification.request.content.categoryIdentifier == Self.nudgeCategoryID ? [] : [.banner, .list, .sound]
     }
 
+    // Completion handler form, answered on the main thread. The async form's
+    // compiler-made thunk calls UIKit's handler from a background thread, and
+    // UIKit asserts the main thread there, so a tap could abort the app (the
+    // crash Baby build 66 and Recharge build 39 shipped).
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
-        didReceive response: UNNotificationResponse
-    ) async {
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
         let action = response.actionIdentifier
         let category = response.notification.request.content.categoryIdentifier
         let routineID = (response.notification.request.content.userInfo["routineID"] as? String)
             .flatMap(UUID.init(uuidString:))
-        await MainActor.run {
+        nonisolated(unsafe) let done = completionHandler
+        Task { @MainActor in
             Self.handle(action: action, category: category, routineID: routineID)
+            done()
         }
     }
 
