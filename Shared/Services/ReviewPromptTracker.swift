@@ -31,8 +31,12 @@ enum ReviewPromptTracker {
 
     /// UI tests and screenshot captures never count launches or ask.
     static var skipsAutomation: Bool {
+        #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         return arguments.contains { $0 == "-ResetUITestData" || $0 == "-SeedScreenshotData" || $0 == "-PaywallSnapshot" || $0 == "-FASTLANE_SNAPSHOT" }
+        #else
+        return false
+        #endif
     }
 
     // MARK: - State
