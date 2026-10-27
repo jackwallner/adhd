@@ -1,0 +1,17 @@
+# Next Cue: ADHD Routine Planner
+
+> Next Cue is an ADHD routine app for iPhone. Break a routine into small steps, and tap I'm stuck to shrink any step to one tiny move you can start now.
+
+## App
+
+- [ADHD Routine App for iPhone | Next Cue: ADHD Routine Planner](https://jackwallner.com/ios/adhd/index.html.md): Next Cue is an ADHD routine app for iPhone. Break a routine into small steps, and tap I'm stuck to shrink any step to one tiny move you can start now.
+
+## Guides
+
+- [How to Start a Task When You Have ADHD: 7 Techniques](https://jackwallner.com/ios/adhd/how-to-start-a-task-with-adhd.html.md): How to start a task when you have ADHD: seven practical task initiation techniques, from smallest starts to if-then plans, citing NIMH, CDC and CHADD.
+
+## Optional
+
+- [Privacy Policy, Next Cue](https://jackwallner.com/ios/adhd/privacy-policy.html.md): How Next Cue handles routine information and purchases.
+- [Support, Next Cue](https://jackwallner.com/ios/adhd/support.html.md): Get support for Next Cue.
+- [Terms of Use, Next Cue](https://jackwallner.com/ios/adhd/terms.html.md): Terms of use for Next Cue.
