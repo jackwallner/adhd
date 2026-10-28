@@ -6,7 +6,7 @@ Web page: https://jackwallner.com/ios/adhd/how-to-start-a-task-with-adhd.html
 
 ## How to Start a Task When You Have ADHD: 7 Techniques
 
-By Jack Wallner · Last updated October 18, 2026
+By Jack Wallner · Last updated October 28, 2026
 
 A practical way to start a task when you are stuck is to make the first step smaller than feels reasonable: open the file, put on one sock, run water in the sink. NIMH and CHADD both advise breaking large tasks into smaller steps. Techniques that add structure around that first step, such as if-then plans, short timers and body doubling, can also help. If starting is hurting your daily life, talk to a health care provider.
 
