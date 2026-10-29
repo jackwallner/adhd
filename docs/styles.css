@@ -115,6 +115,7 @@ h2 {
 }
 .hero img {
   width: min(100%, 300px);
+  height: auto;
   justify-self: center;
   border-radius: 60px;
 }
