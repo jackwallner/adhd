@@ -104,9 +104,11 @@ private struct TemplateRow: View {
 
 enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
     case morning
+    case leaveHouse
     case workStart
     case dreadedTask
     case evening
+    case bedtime
     case blank
 
     var id: Self { self }
@@ -114,9 +116,11 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
     var title: String {
         switch self {
         case .morning: "Morning start"
+        case .leaveHouse: "Leave the house"
         case .workStart: "Start work"
         case .dreadedTask: "Start a dreaded task"
         case .evening: "Evening reset"
+        case .bedtime: "Bedtime"
         case .blank: "Start from scratch"
         }
     }
@@ -131,25 +135,28 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
     var symbol: String {
         switch self {
         case .morning: "sunrise"
+        case .leaveHouse: "door.left.hand.open"
         case .workStart: "laptopcomputer"
         case .dreadedTask: "mountain.2"
         case .evening: "moon.stars"
+        case .bedtime: "bed.double"
         case .blank: "plus"
         }
     }
 
     var hour: Int {
         switch self {
-        case .evening: 21
+        case .evening: 20
+        case .bedtime: 22
         case .workStart: 9
         default: 8
         }
     }
 
-    var minute: Int { 0 }
+    var minute: Int { self == .leaveHouse ? 30 : 0 }
     /// A dreaded task has no set time, so it waits on Home as an anytime routine.
     var hasReminder: Bool { self != .blank && self != .dreadedTask }
-    var weekdays: [Int] { self == .evening ? [1, 2, 3, 4, 5, 6, 7] : [2, 3, 4, 5, 6] }
+    var weekdays: [Int] { self == .evening || self == .bedtime ? [1, 2, 3, 4, 5, 6, 7] : [2, 3, 4, 5, 6] }
     var routineName: String { self == .blank ? "" : title }
 
     var setupSteps: [RoutineSetupStep] {
@@ -166,14 +173,23 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
                 ("Drink a glass of water", "", "Fill the glass", 1, false),
                 ("Get dressed", "", "Put on one sock", 8, false),
                 ("Make the bed", "Good enough is fine", "Pull the cover up", 3, true),
-                ("Eat something", "Keep it simple", "Open the fridge", 10, false),
+                ("Eat something", "Hungry or not", "Open the fridge", 10, false),
                 ("Gather what I need", "", "Pick up your keys", 4, true),
+            ]
+        case .leaveHouse:
+            [
+                ("Grab my bag", "Packed the night before", "Look by the door", 1, false),
+                ("Phone, keys, wallet", "", "Pat your pockets", 1, false),
+                ("Take the trash out", "", "Pick up the bag", 2, true),
+                ("Pack an umbrella", "Every day, rain or not", "Open the closet", 1, true),
+                ("Shoes on", "", "Put on one shoe", 2, false),
+                ("Lock the door", "", "Pull the door shut", 1, false),
             ]
         case .workStart:
             [
                 ("Get a drink", "", "Stand up", 3, true),
-                ("Clear the desk", "Just enough space to work", "Move one thing", 3, true),
-                ("Pick the one first task", "Write it down", "Write one word for it", 2, false),
+                ("Clear the desk", "Just enough space to work", "Push everything to one side", 3, true),
+                ("Pick the one first task", "The easiest one is fine", "Write one word for it", 2, false),
                 ("Put my phone out of reach", "", "Turn it face down", 1, false),
                 ("Open only what that task needs", "", "Open one window", 2, false),
                 ("Work on it for 10 minutes", "Stopping after is allowed", "Do the first two minutes", 10, false),
@@ -181,18 +197,26 @@ enum RoutineStarterTemplate: String, CaseIterable, Identifiable, Hashable {
         case .dreadedTask:
             [
                 ("Name the task", "One sentence is enough", "Say it out loud", 1, false),
+                ("Ask someone to work alongside", "A quiet call counts", "Text one person", 2, true),
                 ("Get what it needs", "", "Open the file or pick up the tool", 2, false),
-                ("Do the easiest part first", "", "Look at it for one minute", 5, false),
+                ("Do the easiest part first", "", "Point at where it starts", 5, false),
                 ("Keep going for 10 minutes", "Stopping after is allowed", "Do one more small piece", 10, true),
-                ("Leave a note for next time", "", "Write one line", 1, true),
+                ("Leave a note for next time", "Leave it open where you’ll see it", "Write one line", 1, true),
             ]
         case .evening:
             [
                 ("Put tomorrow’s clothes out", "", "Pick a shirt", 4, false),
+                ("Wash the dishes", "Just while the microwave runs", "Rinse one plate", 5, true),
                 ("Tidy one surface", "", "Put away three things", 5, true),
-                ("Charge my phone", "", "Find the charger", 1, false),
-                ("Set out what I need", "", "Put your bag by the door", 5, true),
-                ("Brush my teeth", "", "Put toothpaste on the brush", 3, false),
+                ("Pack tomorrow’s bag", "Leave it by the door", "Put your bag by the door", 5, false),
+                ("Hang the trash on the door handle", "", "Tie the bag", 1, true),
+            ]
+        case .bedtime:
+            [
+                ("Charge my phone outside the bedroom", "", "Carry it to the hall", 1, false),
+                ("Shower", "Three minutes counts", "Sit in the bathroom, clothes on", 5, true),
+                ("Brush my teeth", "In the shower works", "Put toothpaste on the brush", 3, false),
+                ("Lights out", "", "Turn off one light", 1, false),
             ]
         case .blank:
             [("", "", "", 5, false)]
