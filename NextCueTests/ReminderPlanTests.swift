@@ -33,7 +33,7 @@ final class ReminderPlanTests: XCTestCase {
         XCTAssertEqual(reminders[0].routineID, routine.id)
     }
 
-    func testPlanSkipsPausedAndDisabledReminderRoutines() throws {
+    func testPlanSkipsTheDayOfAPausedRunAndDisabledReminderRoutines() throws {
         let now = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
         let routine = Routine(
             name: "Pause",
@@ -58,8 +58,59 @@ final class ReminderPlanTests: XCTestCase {
             now: now
         )
 
-        XCTAssertTrue(pausedPlan.isEmpty)
+        XCTAssertFalse(pausedPlan.contains { Calendar.current.isDate($0.fireAt, inSameDayAs: now) })
         XCTAssertTrue(disabledPlan.isEmpty)
+    }
+
+    func testRunInProgressSilencesOnlyTheDayItStartedOn() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let now = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 21, hour: 7, minute: 30)))
+        let routine = Routine(
+            name: "Morning",
+            steps: [RoutineStep(name: "Get dressed")],
+            schedule: RoutineSchedule(hour: 8, minute: 0, weekdays: Set(1...7))
+        )
+        let run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, at: now))
+
+        let reminders = ReminderPlan.reminders(
+            routines: [routine],
+            completions: [],
+            activeRun: run,
+            now: now,
+            calendar: calendar
+        )
+
+        // Today's 8:00 is skipped because the routine is already running. Tomorrow and the days after keep theirs.
+        XCTAssertEqual(reminders.count, ReminderPlan.horizonDays)
+        let first = try XCTUnwrap(reminders.first)
+        XCTAssertEqual(calendar.component(.day, from: first.fireAt), 22)
+    }
+
+    func testRunLeftOpenFromAnEarlierDayDoesNotSilenceToday() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        let startedAt = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 20, hour: 21)))
+        let now = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 21, hour: 7, minute: 30)))
+        let routine = Routine(
+            name: "Evening",
+            steps: [RoutineStep(name: "Tidy one surface")],
+            schedule: RoutineSchedule(hour: 8, minute: 0, weekdays: Set(1...7))
+        )
+        var run = try XCTUnwrap(RoutineEngine.makeRun(for: routine, at: startedAt))
+        RoutineEngine.pause(&run, at: startedAt.addingTimeInterval(300))
+
+        let reminders = ReminderPlan.reminders(
+            routines: [routine],
+            completions: [],
+            activeRun: run,
+            now: now,
+            calendar: calendar
+        )
+
+        let first = try XCTUnwrap(reminders.first)
+        XCTAssertEqual(calendar.component(.day, from: first.fireAt), 21)
+        XCTAssertEqual(calendar.component(.hour, from: first.fireAt), 8)
     }
 
     func testReminderNamesTheFirstStep() throws {

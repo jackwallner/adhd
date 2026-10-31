@@ -28,7 +28,8 @@ enum ReminderPlan {
         let today = calendar.startOfDay(for: now)
 
         for routine in routines where routine.isEnabled && routine.reminderEnabled {
-            guard activeRun?.routineID != routine.id else { continue }
+            // A run in progress silences only the day it started on. A run left open overnight must not switch off every later reminder.
+            let runStartedAt = activeRun.flatMap { $0.routineID == routine.id ? $0.startedAt : nil }
             let completedToday = RoutineEngine.hasCompletion(
                 for: routine.id,
                 on: now,
@@ -39,6 +40,7 @@ enum ReminderPlan {
             for offset in 0...horizonDays {
                 guard let day = calendar.date(byAdding: .day, value: offset, to: today),
                       !(offset == 0 && completedToday),
+                      !(runStartedAt.map { calendar.isDate(day, inSameDayAs: $0) } ?? false),
                       routine.schedule.weekdays.contains(calendar.component(.weekday, from: day)),
                       let fireAt = calendar.date(
                         bySettingHour: routine.schedule.hour,
