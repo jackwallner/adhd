@@ -186,7 +186,9 @@ final class RoutineStore: ObservableObject {
     }
 
     /// Rebuilds pending local reminders and the Live Activity. Call after permission or preference changes and on app foreground.
-    func refreshReminders(now: Date = .now) {
+    /// The app can stay in memory overnight without relaunching, so this also closes a run left over from an earlier day.
+    func refreshReminders(now: Date = .now, calendar: Calendar = .current) {
+        closeRunFromEarlierDay(now: now, calendar: calendar)
         propagate(now: now)
     }
 
@@ -288,29 +290,33 @@ final class RoutineStore: ObservableObject {
         runMirror?.sync(run: activeRun, finishedRunID: justFinished?.run.id, now: now)
     }
 
-    /// A run from an earlier day is closed as a partial record so it cannot block today's reminders.
     /// A run left running for hours resumes paused, since the app cannot know how long it was set aside.
     private func recoverActiveRun(now: Date, calendar: Calendar) {
-        guard var run = activeRun else { return }
-        if !calendar.isDate(run.startedAt, inSameDayAs: now) {
-            RoutineEngine.recoverAfterInterruption(&run, at: now)
-            let closedAt = run.startedAt.addingTimeInterval(run.elapsedSeconds)
-            let completion = RoutineEngine.completion(for: run, at: closedAt)
-            if !commit({ snapshot in
-                snapshot.activeRun = nil
-                snapshot.completions.append(completion)
-                snapshot.completions = Array(snapshot.completions.suffix(self.historyLimit))
-            }) {
-                activeRun = nil
-            }
-            return
-        }
+        guard !closeRunFromEarlierDay(now: now, calendar: calendar), var run = activeRun else { return }
         guard !run.isPaused, let resumedAt = run.lastResumedAt,
               now.timeIntervalSince(resumedAt) > Self.interruptionThreshold else { return }
         RoutineEngine.recoverAfterInterruption(&run, at: now)
         if !commit({ $0.activeRun = run }) {
             activeRun = run
         }
+    }
+
+    /// A run from an earlier day is closed as a partial record so it cannot block today's reminders.
+    /// Returns true when it closed one.
+    @discardableResult
+    private func closeRunFromEarlierDay(now: Date, calendar: Calendar) -> Bool {
+        guard var run = activeRun, !calendar.isDate(run.startedAt, inSameDayAs: now) else { return false }
+        RoutineEngine.recoverAfterInterruption(&run, at: now)
+        let closedAt = run.startedAt.addingTimeInterval(run.elapsedSeconds)
+        let completion = RoutineEngine.completion(for: run, at: closedAt)
+        if !commit({ snapshot in
+            snapshot.activeRun = nil
+            snapshot.completions.append(completion)
+            snapshot.completions = Array(snapshot.completions.suffix(self.historyLimit))
+        }) {
+            activeRun = nil
+        }
+        return true
     }
 
     private static var defaultFileURL: URL {
