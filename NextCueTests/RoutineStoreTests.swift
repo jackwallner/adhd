@@ -121,6 +121,24 @@ final class RoutineStoreTests: XCTestCase {
         XCTAssertTrue(store.completions.isEmpty)
     }
 
+    func testForegroundJustAfterMidnightKeepsARunThatIsStillBeingDone() throws {
+        let fileURL = try temporaryStateURL()
+        let calendar = try utcCalendar()
+        let startedAt = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 21, hour: 23, minute: 50)))
+        let routine = Routine(name: "Bedtime", steps: [RoutineStep(name: "Tidy"), RoutineStep(name: "Brush teeth")])
+        let store = RoutineStore(fileURL: fileURL, now: startedAt, calendar: calendar)
+        XCTAssertTrue(store.saveRoutine(routine))
+        XCTAssertTrue(store.startRun(routineID: routine.id, now: startedAt))
+        XCTAssertTrue(store.completeCurrentStep(now: startedAt.addingTimeInterval(5 * 60)))
+
+        // Ten minutes into the next day the user unlocks the phone mid-routine. The run is not left over, it is in use.
+        store.refreshReminders(now: startedAt.addingTimeInterval(20 * 60), calendar: calendar)
+
+        XCTAssertEqual(store.activeRun?.routineID, routine.id)
+        XCTAssertEqual(store.activeRun?.isPaused, false)
+        XCTAssertTrue(store.completions.isEmpty)
+    }
+
     func testRoutinePausedOvernightStillGetsTomorrowsReminder() throws {
         let fileURL = try temporaryStateURL()
         let calendar = try utcCalendar()
