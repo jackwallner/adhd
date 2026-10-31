@@ -84,6 +84,74 @@ final class RoutineStoreTests: XCTestCase {
         XCTAssertTrue(calendar.isDate(record.completedAt, inSameDayAs: startedAt))
     }
 
+    func testRunFromEarlierDayIsClosedWhenTheAppReturnsToTheForeground() throws {
+        let fileURL = try temporaryStateURL()
+        let calendar = try utcCalendar()
+        let startedAt = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 21, hour: 21)))
+        let routine = Routine(name: "Evening", steps: [RoutineStep(name: "Tidy"), RoutineStep(name: "Brush teeth")])
+        let store = RoutineStore(fileURL: fileURL, now: startedAt, calendar: calendar)
+        XCTAssertTrue(store.saveRoutine(routine))
+        XCTAssertTrue(store.startRun(routineID: routine.id, now: startedAt))
+        XCTAssertTrue(store.completeCurrentStep(now: startedAt.addingTimeInterval(120)))
+        XCTAssertTrue(store.pauseRun(now: startedAt.addingTimeInterval(180)))
+
+        // iOS keeps the app in memory overnight, so nothing relaunches it. It only comes back to the foreground.
+        store.refreshReminders(now: startedAt.addingTimeInterval(12 * 3_600), calendar: calendar)
+
+        XCTAssertNil(store.activeRun)
+        let record = try XCTUnwrap(store.completions.last)
+        XCTAssertFalse(record.isComplete)
+        XCTAssertEqual(record.completedSteps, 1)
+        XCTAssertTrue(calendar.isDate(record.completedAt, inSameDayAs: startedAt))
+    }
+
+    func testForegroundKeepsARunStartedToday() throws {
+        let fileURL = try temporaryStateURL()
+        let calendar = try utcCalendar()
+        let startedAt = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 21, hour: 8)))
+        let routine = Routine(name: "Morning", steps: [RoutineStep(name: "Get dressed"), RoutineStep(name: "Pack bag")])
+        let store = RoutineStore(fileURL: fileURL, now: startedAt, calendar: calendar)
+        XCTAssertTrue(store.saveRoutine(routine))
+        XCTAssertTrue(store.startRun(routineID: routine.id, now: startedAt))
+
+        store.refreshReminders(now: startedAt.addingTimeInterval(30 * 60), calendar: calendar)
+
+        XCTAssertEqual(store.activeRun?.routineID, routine.id)
+        XCTAssertEqual(store.activeRun?.isPaused, false)
+        XCTAssertTrue(store.completions.isEmpty)
+    }
+
+    func testRoutinePausedOvernightStillGetsTomorrowsReminder() throws {
+        let fileURL = try temporaryStateURL()
+        let calendar = try utcCalendar()
+        let spy = SpyReminders()
+        let startedAt = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 21, hour: 8)))
+        let routine = Routine(
+            name: "Morning",
+            steps: [RoutineStep(name: "Get dressed"), RoutineStep(name: "Pack bag")],
+            schedule: RoutineSchedule(hour: 8, minute: 0, weekdays: Set(1...7))
+        )
+        let store = RoutineStore(fileURL: fileURL, reminderService: spy, now: startedAt, calendar: calendar)
+        XCTAssertTrue(store.saveRoutine(routine))
+        XCTAssertTrue(store.startRun(routineID: routine.id, now: startedAt))
+        XCTAssertTrue(store.pauseRun(now: startedAt.addingTimeInterval(300)))
+
+        // The user never opens the app again that day. The next time it is foregrounded is the next morning.
+        let nextMorning = try XCTUnwrap(calendar.date(from: DateComponents(year: 2026, month: 9, day: 22, hour: 7, minute: 30)))
+        store.refreshReminders(now: nextMorning, calendar: calendar)
+
+        let scheduled = ReminderPlan.reminders(
+            routines: spy.lastRoutines,
+            completions: spy.lastCompletions,
+            activeRun: spy.lastActiveRun,
+            now: nextMorning,
+            calendar: calendar
+        )
+        let first = try XCTUnwrap(scheduled.first)
+        XCTAssertEqual(calendar.component(.day, from: first.fireAt), 22)
+        XCTAssertEqual(calendar.component(.hour, from: first.fireAt), 8)
+    }
+
     func testUndoFinishReopensRunOnLastStep() throws {
         let fileURL = try temporaryStateURL()
         let now = try XCTUnwrap(Date(timeIntervalSince1970: 1_790_000_000))
@@ -157,5 +225,27 @@ final class RoutineStoreTests: XCTestCase {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         addTeardownBlock { try? FileManager.default.removeItem(at: directory) }
         return directory.appendingPathComponent("state.json")
+    }
+
+    private func utcCalendar() throws -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(secondsFromGMT: 0))
+        return calendar
+    }
+}
+
+/// Remembers what the store last asked the scheduler to plan from.
+@MainActor
+private final class SpyReminders: ReminderScheduling {
+    private(set) var lastRoutines: [Routine] = []
+    private(set) var lastCompletions: [RoutineCompletion] = []
+    private(set) var lastActiveRun: RoutineRun?
+
+    func configure() {}
+
+    func reschedule(routines: [Routine], completions: [RoutineCompletion], activeRun: RoutineRun?, now: Date) {
+        lastRoutines = routines
+        lastCompletions = completions
+        lastActiveRun = activeRun
     }
 }
