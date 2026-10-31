@@ -188,7 +188,7 @@ final class RoutineStore: ObservableObject {
     /// Rebuilds pending local reminders and the Live Activity. Call after permission or preference changes and on app foreground.
     /// The app can stay in memory overnight without relaunching, so this also closes a run left over from an earlier day.
     func refreshReminders(now: Date = .now, calendar: Calendar = .current) {
-        closeRunFromEarlierDay(now: now, calendar: calendar)
+        closeRunFromEarlierDay(now: now, calendar: calendar, minimumIdle: Self.interruptionThreshold)
         propagate(now: now)
     }
 
@@ -302,10 +302,13 @@ final class RoutineStore: ObservableObject {
     }
 
     /// A run from an earlier day is closed as a partial record so it cannot block today's reminders.
+    /// `minimumIdle` spares a run that was touched recently, such as a bedtime routine still going just after midnight.
     /// Returns true when it closed one.
     @discardableResult
-    private func closeRunFromEarlierDay(now: Date, calendar: Calendar) -> Bool {
+    private func closeRunFromEarlierDay(now: Date, calendar: Calendar, minimumIdle: TimeInterval = 0) -> Bool {
         guard var run = activeRun, !calendar.isDate(run.startedAt, inSameDayAs: now) else { return false }
+        let lastTouched = run.pausedAt ?? run.lastResumedAt ?? run.startedAt
+        guard now.timeIntervalSince(lastTouched) >= minimumIdle else { return false }
         RoutineEngine.recoverAfterInterruption(&run, at: now)
         let closedAt = run.startedAt.addingTimeInterval(run.elapsedSeconds)
         let completion = RoutineEngine.completion(for: run, at: closedAt)
